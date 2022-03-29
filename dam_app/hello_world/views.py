@@ -1,10 +1,15 @@
 from logging import DEBUG, log
+import re
 from django import http
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from hello_world.models import User
 from django.core.serializers import serialize
+
+# Maps
+import folium
+import geemap.foliumap as geemap
 
 # Create your views here.
 
@@ -38,3 +43,26 @@ def get_user(request, id):
   response.status_code = 200
     
   return response
+
+@require_http_methods(["GET"])
+def home(request):
+  figure = folium.Figure()
+
+  Map = geemap.Map(plugin_Draw = True, 
+                    Draw_export = True)
+
+  Map.add_to(figure)
+
+  figure.render()
+  
+  return render(request, "home.html", {
+    "app_name": "Hello, World!",
+    "map": figure
+  })
+  
+template_name = 'map.html'
+
+
+
+
+  

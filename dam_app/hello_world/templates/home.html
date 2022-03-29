@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ app_name }}</title>
+  <script type="text/javascript">
+    var text = "TEXT";
+    function changeTheVariable() {
+      text = text.concat("!")
+      document.getElementById("output2").innerHTML = text;
+    }
+  </script>
+  
+  {{ map.header.render|safe }}
+</head>
+<body>
+  <h1 id="output">{{ app_name }}</h1>
+  <h2 id="output2"></h2>
+  <button onclick="changeTheVariable()">
+    Click Me!
+  </button>
+  <br><br><br><br><br>
+  {{ map.html.render|safe }}
+</body>
+<script> {{ map.script.render | safe }}</script>
+</html>
