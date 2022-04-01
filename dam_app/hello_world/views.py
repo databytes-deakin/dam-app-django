@@ -1,4 +1,5 @@
-from logging import DEBUG, log
+from asyncio.log import logger
+from logging import DEBUG, WARNING, log
 import re
 from django import http
 from django.shortcuts import render
@@ -6,6 +7,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from hello_world.models import User
 from django.core.serializers import serialize
+import json
 
 # Maps
 import folium
@@ -53,6 +55,8 @@ def home(request):
 
   Map.add_to(figure)
 
+  Map.setOptions('SATELLITE');
+  
   figure.render()
   
   return render(request, "home.html", {
@@ -63,6 +67,13 @@ def home(request):
 template_name = 'map.html'
 
 
-
-
+@require_http_methods(["POST", "GET"])
+def processCoords(request):
+  body = request.body.decode('utf-8')
   
+  log(level=WARNING, msg=body)
+  data = json.loads(body)
+  response = http.JsonResponse(data, content_type="text/json")
+  response.status_code = 200
+  
+  return response
