@@ -1,16 +1,24 @@
 # DAM Project's Web-application in Django
 
-## Pre-requisites
-
-```bash
-pip install django
-```
 
 ## Clone the repository
 
 ```bash
 git clone https://github.com/DAM-Project/dam-app-django
 
+cd dam-app-django/
+
+```
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+## Files
+
+```
 cd dam-app-django/dam_app 
 
 ls
