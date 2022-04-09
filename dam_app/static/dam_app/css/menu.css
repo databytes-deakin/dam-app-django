@@ -1,0 +1,136 @@
+#map {
+  z-index: 9;
+  left: 135px;
+}
+
+.menu {
+    position: absolute;
+    z-index: 99;
+    left: 0;
+    height: 100%;
+    width: 135px;
+    list-style-type: none;
+    background: #4d4d4f;
+    padding-top: 120px;
+    font-size: 2rem;
+    color: #fff;
+  }
+  .menu ul.menu_top,
+  .menu ul.menu_bottom {
+    padding-left: 0px;
+  }
+  .menu ul.menu_top li a {
+    padding-left: 15px;
+  }
+  .menu ul.menu_top li {
+    display: block;
+    margin: 15px 0;
+  }
+  .menu a,
+  .menu a.first_menu_item.active {
+    color: #ffffff;
+    height: 40px;
+    display: block;
+    margin: 10px 0;
+    padding: 5px 15px;
+    text-decoration: none;
+  }
+
+  .menu a.first_menu_item:hover,
+  .menu a.first_menu_item.active {
+    background-color: #565656;
+    text-decoration: none;
+  }
+  .menu ul.menu_bottom {
+    position: fixed;
+    bottom: 0;
+
+  }
+  .icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    padding-right: 5px;
+  }
+
+  .map_styles,
+  .classifier_options,
+  .export_options {
+    display:none;
+  }
+
+
+.big_icon {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #fff;
+}
+/****** Map styles *****/
+.map_styles,
+.classifier_options,
+.export_options {
+  overflow: visible;
+  margin-left: 120px;
+  background-color: #565656;
+  position: absolute;
+  left: 15px;
+  top: 0px;
+  height: 100%;
+  width: 260px;
+}
+
+.map_styles h3,
+.export_options h3 {
+  margin-left: 30px;
+  font-size: 1.6rem;
+}
+
+ul.second_level {
+  padding-left: 30px;
+}
+
+ul.second_level li {
+  display: inline !important;
+  margin-left: 30px;
+  margin: 2px;
+}
+
+ul.second_level li a {
+  display: inline-block;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+}
+
+/****** *********/
+.long_btn {
+  display: inline-block !important;
+  padding: 6px 12px !important;
+  margin-bottom: 0 !important;
+  font-size: 14px;
+  height: 38px !important;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid white;
+  border-radius: 4px;
+  color: #343a40;
+
+    background-color: #616161 !important;
+    background-image: none;
+    border-color: #fff;
+    text-decoration: none;
+    width: 180px;
+}
+.long_btn:hover {
+  text-decoration: none;
+  background-color: #454545 !important;
+
+}

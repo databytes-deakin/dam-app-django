@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,12 +6,102 @@
     <title>{{ app_name }}</title>
     <!-- Header for the map -->
     {{ map.header.render|safe }}
-    
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
   </head>
   <body>
     <!-- Body for the map -->
     <div id="map">
       {{ map.html.render|safe }}
+    </div>
+    <div class="menu">
+      <ul class="menu_top">
+        <li>
+          <a href="#" class="map_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/planet.svg' %}" alt="">Map</a>
+          <div class="map_styles second_menu">
+            <h3 class="header">Map Style</h3>
+            <ul class="second_level">
+              <li>
+                <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map1.png' %}" alt=""></a>
+              </li>
+              <li>
+                <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map2.png' %}" alt=""></a>
+              </li>
+              <li>
+                <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map3.png' %}" alt=""></a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="classifier_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/cube.svg' %}" alt="">Classifier</a>
+          <div class="classifier_options second_menu">
+            <ul>
+              <li>
+                <a  class="long_btn">Full Algorithm</a>
+              </li>
+              <li>
+                <a  class="long_btn"><img class="icon" src="{% static 'dam_app/images/electricity.svg' %}" alt="">Half Algorithm</a>
+              </li>
+              <li>
+                <a  class="long_btn"><img class="icon" src="{% static 'dam_app/images/electricity.svg' %}" alt="">
+                  <img class="icon" src="{% static 'dam_app/images/electricity.svg' %}" alt="">
+                  Quick Algorithm</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a href="#" class="export_icon first_menu_item">
+            <img class="icon" src="{% static 'dam_app/images/export.svg' %}" alt="">Export
+          </a>
+          <div class="export_options second_menu">
+            <h3 class="header"><img class="icon" src="{% static 'dam_app/images/export.svg' %}" alt="">Map Export</h3>
+            <ul>
+              <li>
+                <a  class="long_btn">GEO-TIFF</a>
+              </li>
+              <li>
+                <a  class="long_btn">PNG</a>
+              </li>
+              <li>
+                <a  class="long_btn">JPG</a>
+              </li>
+              <li>
+                <a  class="long_btn">SVG</a>
+              </li>
+            </ul>
+            <h3 class="header"><img class="icon" src="{% static 'dam_app/images/polygon.svg' %}" alt="">Polygon Outline</h3>
+            <ul>
+              <li>
+                <a  class="long_btn">GEO-TIFF</a>
+              </li>
+              <li>
+                <a  class="long_btn">JSON</a>
+              </li>
+            </ul>
+            <h3 class="header"><img class="icon" src="{% static 'dam_app/images/signal.svg' %}" alt="">Statistics</h3>
+            <ul>
+              <li>
+                <a  class="long_btn">JSON</a>
+              </li>
+              <li>
+                <a  class="long_btn">XLSX</a>
+              </li>
+              <li>
+                <a  class="long_btn">CSV</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <ul class="menu_bottom">
+        <li>
+          <a href=""><img class="icon" src="{% static 'dam_app/images/bug.svg' %}">Errors</a>
+        </li>
+        <li>
+          <a href=""><img class="icon" src="{% static 'dam_app/images/share.svg' %}">Share</a>
+        </li>
+      </ul>
     </div>
   </body>
   <script>{{ map.script.render | safe }}</script>
@@ -34,7 +125,7 @@
           }
         });
       }
-      
+
       // Setup AJAX's csrf token for all requests
       $.ajaxSetup({
         beforeSend: function(xhr, settings) {
@@ -43,16 +134,16 @@
           xhr.setRequestHeader("content-type", "application/json");
         }
       });
-      
+
       // Get Map
       const mapID = document.getElementsByClassName("folium-map leaflet-container")[0].id
       const map = eval(mapID);
-      
+
       // Add click listener
       map.on(L.Draw.Event.CREATED, function(e) {
         const layer = e.layer, type = e.layerType;
         const coords = JSON.stringify(layer.toGeoJSON());
-        
+
         layer.removeEventListener(); // remove default implementation
         layer.on('click', function() {
           // alert("coords");
@@ -60,6 +151,27 @@
           post(coords)
         });
       });
+
+    $('.map_icon').on('click', function(e){
+        $('.second_menu').hide();
+        $('.first_menu_item').removeClass('active');
+        $('.map_icon').addClass('active');
+        $('.map_styles').show();
+      });
+    $('.classifier_icon').on('click', function(e){
+        $('.second_menu').hide();
+        $('.first_menu_item').removeClass('active');
+        $('.classifier_options').addClass('active');
+        $('.classifier_options').show();
+      });
+    $('.export_icon').on('click', function(e){
+        $('.second_menu').hide();
+        $('.first_menu_item').removeClass('active');
+        $('.export_options').addClass('active');
+        $('.export_options').show();
+
+    });
+
     });
   </script>
 </html>
