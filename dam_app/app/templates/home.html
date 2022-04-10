@@ -153,24 +153,33 @@
       });
 
     $('.map_icon').on('click', function(e){
+      if ($('.map_styles').is(':visible')) {
+        $('.second_menu').hide();
+      } else {
         $('.second_menu').hide();
         $('.first_menu_item').removeClass('active');
         $('.map_icon').addClass('active');
         $('.map_styles').show();
-      });
+        }});
     $('.classifier_icon').on('click', function(e){
+      if ($('.classifier_options').is(':visible')) {
+        $('.second_menu').hide();
+      } else {
         $('.second_menu').hide();
         $('.first_menu_item').removeClass('active');
         $('.classifier_options').addClass('active');
         $('.classifier_options').show();
-      });
+    }});
     $('.export_icon').on('click', function(e){
+      if ($('.export_options').is(':visible')) {
+        $('.second_menu').hide();
+      } else {
         $('.second_menu').hide();
         $('.first_menu_item').removeClass('active');
         $('.export_options').addClass('active');
         $('.export_options').show();
 
-    });
+    }});
 
     });
   </script>
