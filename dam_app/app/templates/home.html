@@ -116,8 +116,9 @@
           contentType: 'application/json',
           data: data,
           success: function(resp){
+            console.log("RETURNED FROM CLASSIFIER")
             // alert(resp); //will alert ok
-            console.warn(resp);
+            // console.warn(resp);
           },
           error: function(resp){
             console.error("Didn't receive OK response");
@@ -138,18 +139,17 @@
       // Get Map
       const mapID = document.getElementsByClassName("folium-map leaflet-container")[0].id
       const map = eval(mapID);
-
       // Add click listener
       map.on(L.Draw.Event.CREATED, function(e) {
         const layer = e.layer, type = e.layerType;
         const coords = JSON.stringify(layer.toGeoJSON());
-
-        layer.removeEventListener(); // remove default implementation
-        layer.on('click', function() {
-          // alert("coords");
-          console.log(coords);
-          post(coords)
-        });
+        console.log(coords);
+        post(coords);
+        // layer.removeEventListener(); // remove default implementation
+        // layer.on('click', function() {
+        //   console.log(coords);
+        //   post(coords)
+        // });
       });
 
     $('.map_icon').on('click', function(e){
