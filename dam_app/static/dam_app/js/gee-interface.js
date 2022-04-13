@@ -1,4 +1,7 @@
+
+
 $(document).ready(function () {
+  
   // AJAX post to classifier
   function post(data){
     $.ajax({
@@ -33,15 +36,16 @@ $(document).ready(function () {
   let Map = eval(mapID);
   // Add click listener
   Map.on(L.Draw.Event.CREATED, function(e) {
-    const layer = e.layer, type = e.layerType;
-    const coords = layer.toGeoJSON();
-    console.log(coords);
-    
+    var layer = e.layer;
+    var type = e.layerType;
+    var coords = JSON.stringify(layer.toGeoJSON());
+    layer.on('click', function() {
+      const layer = e.layer, type = e.layerType;
+      const coords = layer.toGeoJSON();
+      console.log(coords);
+      Map = classify(Map, ee);
+      console.log('Classifier complete');
+    });
+    drawnItems.addLayer(layer);
   });
-  
-  
-  
-  var ee = require('@google/earthengine');
-  
-  Map = classify(Map, ee);
 });

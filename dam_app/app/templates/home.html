@@ -104,35 +104,43 @@
       </ul>
     </div>
   </body>
-  <script>{{ map.script.render | safe }}</script>
+  <!-- Page interactivity -->
   <script type="text/javascript">
-    $('.map_icon').on('click', function(e){
-      if ($('.map_styles').is(':visible')) {
-        $('.second_menu').hide();
-      } else {
-        $('.second_menu').hide();
-        $('.first_menu_item').removeClass('active');
-        $('.map_icon').addClass('active');
-        $('.map_styles').show();
-        }});
-    $('.classifier_icon').on('click', function(e){
-      if ($('.classifier_options').is(':visible')) {
-        $('.second_menu').hide();
-      } else {
-        $('.second_menu').hide();
-        $('.first_menu_item').removeClass('active');
-        $('.classifier_options').addClass('active');
-        $('.classifier_options').show();
-    }});
-    $('.export_icon').on('click', function(e){
-      if ($('.export_options').is(':visible')) {
-        $('.second_menu').hide();
-      } else {
-        $('.second_menu').hide();
-        $('.first_menu_item').removeClass('active');
-        $('.export_options').addClass('active');
-        $('.export_options').show();
-
-    }});
+    $(document).ready(function () {
+      $('.map_icon').on('click', function(e){
+        if ($('.map_styles').is(':visible')) {
+          $('.second_menu').hide();
+        } else {
+          $('.second_menu').hide();
+          $('.first_menu_item').removeClass('active');
+          $('.map_icon').addClass('active');
+          $('.map_styles').show();
+          }});
+      $('.classifier_icon').on('click', function(e){
+        if ($('.classifier_options').is(':visible')) {
+          $('.second_menu').hide();
+        } else {
+          $('.second_menu').hide();
+          $('.first_menu_item').removeClass('active');
+          $('.classifier_options').addClass('active');
+          $('.classifier_options').show();
+      }});
+      $('.export_icon').on('click', function(e){
+        if ($('.export_options').is(':visible')) {
+          $('.second_menu').hide();
+        } else {
+          $('.second_menu').hide();
+          $('.first_menu_item').removeClass('active');
+          $('.export_options').addClass('active');
+          $('.export_options').show();
+      }});
+    });
   </script>
+  <!-- Import scripts -->
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="{% static 'dam_app/js/gee.js' %}"></script>
+  <script src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
+  <script src="{% static 'dam_app/js/gee-interface.js' %}"></script>
+  <script>{{ map.script.render | safe }}</script>
 </html>
