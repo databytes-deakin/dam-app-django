@@ -106,52 +106,6 @@
   </body>
   <script>{{ map.script.render | safe }}</script>
   <script type="text/javascript">
-    $(document).ready(function () {
-      // AJAX post to classifier
-      function post(data){
-        $.ajax({
-          method:'POST',
-          url: "/classify/",
-          dataType: "json",
-          contentType: 'application/json',
-          data: data,
-          success: function(resp){
-            console.log("RETURNED FROM CLASSIFIER")
-            // alert(resp); //will alert ok
-            // console.warn(resp);
-          },
-          error: function(resp){
-            console.error("Didn't receive OK response");
-            console.error(resp);
-          }
-        });
-      }
-
-      // Setup AJAX's csrf token for all requests
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          // TODO: confirm - may be security vulns.
-          xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token|safe }}');
-          xhr.setRequestHeader("content-type", "application/json");
-        }
-      });
-
-      // Get Map
-      const mapID = document.getElementsByClassName("folium-map leaflet-container")[0].id
-      const map = eval(mapID);
-      // Add click listener
-      map.on(L.Draw.Event.CREATED, function(e) {
-        const layer = e.layer, type = e.layerType;
-        const coords = JSON.stringify(layer.toGeoJSON());
-        console.log(coords);
-        post(coords);
-        // layer.removeEventListener(); // remove default implementation
-        // layer.on('click', function() {
-        //   console.log(coords);
-        //   post(coords)
-        // });
-      });
-
     $('.map_icon').on('click', function(e){
       if ($('.map_styles').is(':visible')) {
         $('.second_menu').hide();
@@ -180,7 +134,5 @@
         $('.export_options').show();
 
     }});
-
-    });
   </script>
 </html>

@@ -24,6 +24,5 @@ urlpatterns = [
     path('create/', views.create_user),
     path('users/<int:id>/', views.get_user, name='get_user'),
     path('test/', views.test_view, name='test'),
-    path('classify/', views.processCoords),
     path('', views.home, name='Home'),
 ]
