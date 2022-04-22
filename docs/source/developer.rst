@@ -1,12 +1,17 @@
-Usage
-=====
+For developers
+==============
+Clone the repository.
+
+.. code-block:: console
+    git clone https://github.com/DAM-Project/dam-app-django
+    cd dam-app-django/
 
 .. _installation:
 
 Installation
 ------------
 
-To use Lumache, first install it using pip:
+To use DAM App, :
 
 .. code-block:: console
 
