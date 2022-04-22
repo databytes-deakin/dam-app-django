@@ -14,6 +14,14 @@ Installation
 
     pip install -r requirements.txt
 
+Files
+-----
+
+.. code-block:: console
+
+cd dam-app-django/dam_app
+
+ls
 
 .. _installation:
 
