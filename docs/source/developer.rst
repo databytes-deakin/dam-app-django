@@ -22,7 +22,26 @@ Files
     cd dam-app-django/dam_app
 
     ls
-    
+
+You will see three folders and one file.
+
+.. code-block:: console
+
+manage.py - command line utility to let you interact with django project
+
+dam_app - python package, used across multiple applications.
+
+app - the actual app that we're going to develop
+
+hello_world - toy app to play with.
+
+
+
+
+
+
+
+
 .. _installation:
 
 Installation
