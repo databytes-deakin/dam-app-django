@@ -3,6 +3,7 @@ For developers
 Clone the repository.
 
 .. code-block:: console
+    
     git clone https://github.com/DAM-Project/dam-app-django
     cd dam-app-django/
 
