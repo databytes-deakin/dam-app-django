@@ -23,7 +23,6 @@ Files
 
     ls
     
-
 .. _installation:
 
 Installation
