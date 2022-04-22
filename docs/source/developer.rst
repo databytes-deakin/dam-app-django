@@ -7,7 +7,8 @@ Clone the repository.
     git clone https://github.com/DAM-Project/dam-app-django
     cd dam-app-django/
 
-Installation
+============
+Installation.
 
 .. code-block:: console
 
