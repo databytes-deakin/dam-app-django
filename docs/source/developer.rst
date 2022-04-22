@@ -36,6 +36,10 @@ You will see three folders and one file.
 
     hello_world - toy app to play with.
 
+Customize the hello_world/ folder (aka hello_world 
+application) and get comfortable with Django framework.
+=======================================================
+
 .. _installation:
 
 Installation
