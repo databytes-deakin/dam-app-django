@@ -4,6 +4,9 @@
   <head>
     <meta charset="UTF-8">
     <title>{{ app_name }}</title>
+    
+    <!-- Client ID -->
+    <meta name="google-signin-client_id" content="193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com">
     <!-- Header for the map -->
     {{ map.header.render|safe }}
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
@@ -139,8 +142,8 @@
   <!-- Import scripts -->
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="{% static 'dam_app/js/gee.js' %}"></script>
-  <script src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
-  <script src="{% static 'dam_app/js/gee-interface.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/gee.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/gee-interface.js' %}"></script>
   <script>{{ map.script.render | safe }}</script>
 </html>
