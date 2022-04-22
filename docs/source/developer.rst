@@ -7,11 +7,9 @@ Clone the repository.
     git clone https://github.com/DAM-Project/dam-app-django
     cd dam-app-django/
 
-
-.. _installation:
-
 Installation
 ------------
+
 .. code-block:: console
 
     pip install -r requirements.txt
