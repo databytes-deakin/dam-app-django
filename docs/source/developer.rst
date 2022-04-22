@@ -36,18 +36,16 @@ You will see three folders and one file.
 
     hello_world - toy app to play with.
 
-Customize the hello_world/ folder (aka hello_world 
-application) and get comfortable with Django framework.
-------------------------------------------------------
+Customize the hello_world/ folder (aka hello_world application) and get comfortable with Django framework.
+----------------------------------------------------------------------------------------------------------
 
 .. code-block:: console
 
    $ git clone https://github.com/DAM-
    Project/dam-app-django.git 
 
-If any modules required, try these commands under project 
-folder in terminal
----------------------------------------------------------
+If any modules required, try these commands under project folder in terminal
+----------------------------------------------------------------------------
 
 .. code-block:: console
 
@@ -57,17 +55,15 @@ folder in terminal
 
     $ pip install virtualenv
 
-You also will most likely need to install the relevant npm 
-dependencies by running:
-----------------------------------------------------------
+You also will most likely need to install the relevant npm dependencies by running:
+----------------------------------------------------------------------------------
 
 .. code-block:: console
 
     npm i
 
-In case of fresh installation, you may have to create 
-environment first
------------------------------------------------------
+In case of fresh installation, you may have to create environment first
+-----------------------------------------------------------------------
 
 .. code-block:: console
 
