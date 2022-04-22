@@ -19,9 +19,10 @@ Files
 
 .. code-block:: console
 
-cd dam-app-django/dam_app
+    cd dam-app-django/dam_app
 
-ls
+    ls
+    
 
 .. _installation:
 
