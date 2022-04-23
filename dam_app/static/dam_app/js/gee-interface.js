@@ -3,10 +3,10 @@
 $(document).ready(() => {
   console.log("Document ready");
   // AJAX post to classifier
-  function post(data){
+  function post(data, endpoint){
     $.ajax({
       method:'POST',
-      url: "/classify/",
+      url: endpoint,
       dataType: "json",
       contentType: 'application/json',
       data: data,
@@ -41,7 +41,6 @@ $(document).ready(() => {
   ee.data.authenticateViaOauth(
     "193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com"
   , () => {
-  // ee.data.authenticateViaOauth('111607998598840374850', () => {
     console.log("Authentication via OAuth was a success!");
   }, (e) => {
     console.error('Authentication via OAuth: ' + e);
@@ -59,18 +58,25 @@ $(document).ready(() => {
   // Add click listener
   Map.on(L.Draw.Event.CREATED, async (e) => {
     console.log('Draw.Event.CREATED');
+    
     const layer = e.layer;
     const type = e.layerType;
+    
     const coords = JSON.stringify(layer.toGeoJSON());
+    
     layer.on('click', () => {
-      console.log('OnClick start');
       console.log("coords", coords);
       
       console.log("Initialising...");
+      
       ee.initialize();
+      
       console.log('Classify!');
+      
       console.log(layer);
-      Map = classify(Map, ee, layer);
+      
+      const classified = classify(Map, ee, layer.toGeoJSON());
+      
       console.log('Classifier complete');
     });
     drawnItems.addLayer(layer);

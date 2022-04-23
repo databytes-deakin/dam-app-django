@@ -39,59 +39,16 @@ function classify(Map, ee, geometry){
     'A52A2A' // Land
   ];
 
-  console.log('Add Layers');
+  console.log('Details');
+  const final = classified.clip(geometry);
+  // console.log(final.toArray());
   
-  // Map.addLayer(ic, null, 'classification')
-  const l = L.imageOverlay(classified.clip(geometry), {palette: palette, min: 0, max: 2}).addTo(Map);
-  console.log(l);
-  // Map.addLayer(l, null, 'classification CART')
-  // Map.addLayer(classified.clip(geometry), {palette: palette, min: 0, max: 2}, 'classification CART')
-  // Map.addLayer(new L.geoJson(classified.clip(geometry.toGeoJSON())), {palette: palette, min: 0, max: 2}, 'classification CART')
-
-  // // Export a GeoTIFF.
-  // Export.image.toDrive({
-  //   image: classified,
-  //   description: 'classifiedImage',
-  //   scale: 10,
-  //   region: geometry
-  // });
-
-  // const legend = ui.Panel({style: {position: 'middle-right', padding: '8px 15px'}});
-
-  console.log('Make Row');
-  // const makeRow = function(color, name) {
-  //   const colorBox = ui.Label({
-  //     style: {color: '#ffffff',
-  //       backgroundColor: color,
-  //       padding: '10px',
-  //       margin: '0 0 4px 0',
-  //     }
-  //   });
-  //   const description = ui.Label({
-  //     value: name,
-  //     style: {
-  //       margin: '0px 0 4px 6px',
-  //     }
-  //   }); 
-  //   return ui.Panel({
-  //     widgets: [colorBox, description],
-  //     layout: ui.Panel.Layout.Flow('horizontal')}
-  // )};
-
-  // const title = ui.Label({
-  //   value: 'Legend',
-  //   style: {fontWeight: 'bold',
-  //     fontSize: '16px',
-  //     margin: '0px 0 4px 0px'}});
-  
-  console.log('Populate Legend');
-  // legend.add(title);
-  // legend.add(makeRow('brown','Urban'))
-  // legend.add(makeRow('blue','Water'))
-  // legend.add(makeRow('green','Vegetation'))
-
-  console.log('Add Legend');
-  // Map.add(legend);
-  
-  return Map;
+  console.log('Returned clipped classification');
+  ee.batch.Export.image.toAsset({
+    image: final,
+    description: 'imageToAssetExample',
+    assetId: 'projects/dam-ee-markblashki1-test/assets/testAsset',
+    region: geometry,
+  });
+  return {};
 }
