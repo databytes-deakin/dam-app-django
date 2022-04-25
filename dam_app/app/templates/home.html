@@ -4,22 +4,27 @@
   <head>
     <meta charset="UTF-8">
     <title>{{ app_name }}</title>
-    <!-- Header for the map -->
-    {{ map.header.render|safe }}
+    
+    <!-- Client ID -->
+    <meta name="google-signin-client_id" content="193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/reset.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
+  <script
+  src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+  integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+  crossorigin="anonymous"></script>
   </head>
   <body>
     <!-- Body for the map -->
-    <div id="map">
-      {{ map.html.render|safe }}
-    </div>
+    <div id="map"></div>
     <div class="menu">
       <ul class="menu_top">
+        <button class="long_btn" onClick="drawRect();">Draw Rectangle</button>
         <li>
           <a href="#" class="map_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/planet.svg' %}" alt="">Map</a>
           <div class="map_styles second_menu">
             <h3 class="header">Map Style</h3>
-            <ul class="second_level">
+            <ul>
               <li>
                 <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map1.png' %}" alt=""></a>
               </li>
@@ -104,83 +109,45 @@
       </ul>
     </div>
   </body>
-  <script>{{ map.script.render | safe }}</script>
+  <!-- Page interactivity -->
   <script type="text/javascript">
     $(document).ready(function () {
-      // AJAX post to classifier
-      function post(data){
-        $.ajax({
-          method:'POST',
-          url: "/classify/",
-          dataType: "json",
-          contentType: 'application/json',
-          data: data,
-          success: function(resp){
-            // alert(resp); //will alert ok
-            console.warn(resp);
-          },
-          error: function(resp){
-            console.error("Didn't receive OK response");
-            console.error(resp);
-          }
-        });
-      }
-
-      // Setup AJAX's csrf token for all requests
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          // TODO: confirm - may be security vulns.
-          xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token|safe }}');
-          xhr.setRequestHeader("content-type", "application/json");
-        }
-      });
-
-      // Get Map
-      const mapID = document.getElementsByClassName("folium-map leaflet-container")[0].id
-      const map = eval(mapID);
-
-      // Add click listener
-      map.on(L.Draw.Event.CREATED, function(e) {
-        const layer = e.layer, type = e.layerType;
-        const coords = JSON.stringify(layer.toGeoJSON());
-
-        layer.removeEventListener(); // remove default implementation
-        layer.on('click', function() {
-          // alert("coords");
-          console.log(coords);
-          post(coords)
-        });
-      });
-
-    $('.map_icon').on('click', function(e){
-      if ($('.map_styles').is(':visible')) {
-        $('.second_menu').hide();
-      } else {
-        $('.second_menu').hide();
-        $('.first_menu_item').removeClass('active');
-        $('.map_icon').addClass('active');
-        $('.map_styles').show();
-        }});
-    $('.classifier_icon').on('click', function(e){
-      if ($('.classifier_options').is(':visible')) {
-        $('.second_menu').hide();
-      } else {
-        $('.second_menu').hide();
-        $('.first_menu_item').removeClass('active');
-        $('.classifier_options').addClass('active');
-        $('.classifier_options').show();
-    }});
-    $('.export_icon').on('click', function(e){
-      if ($('.export_options').is(':visible')) {
-        $('.second_menu').hide();
-      } else {
-        $('.second_menu').hide();
-        $('.first_menu_item').removeClass('active');
-        $('.export_options').addClass('active');
-        $('.export_options').show();
-
-    }});
-
+      $('.map_icon').on('click', function(e){
+        if ($('.map_styles').is(':visible')) {
+          $('.second_menu').hide();
+        } else {
+          $('.second_menu').hide();
+          $('.first_menu_item').removeClass('active');
+          $('.map_icon').addClass('active');
+          $('.map_styles').show();
+          }});
+      $('.classifier_icon').on('click', function(e){
+        if ($('.classifier_options').is(':visible')) {
+          $('.second_menu').hide();
+        } else {
+          $('.second_menu').hide();
+          $('.first_menu_item').removeClass('active');
+          $('.classifier_options').addClass('active');
+          $('.classifier_options').show();
+      }});
+      $('.export_icon').on('click', function(e){
+        if ($('.export_options').is(':visible')) {
+          $('.second_menu').hide();
+        } else {
+          $('.second_menu').hide();
+          $('.first_menu_item').removeClass('active');
+          $('.export_options').addClass('active');
+          $('.export_options').show();
+      }});
     });
   </script>
+  <!-- Import scripts -->
+  <!-- Load the Google Maps API. -->
+  <script src="https://maps.google.com/maps/api/js?libraries=drawing"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="{% static 'dam_app/js/map.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/gee.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/gee-interface.js' %}"></script>
 </html>

@@ -7,47 +7,31 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from app.models import User
 from django.core.serializers import serialize
-import json
 
 # Maps
 import folium
 import geemap.foliumap as geemap
 
-# Create your views here.
+@require_http_methods(["POST"])
+def map(request):
+  figure = folium.Figure()
 
-@require_http_methods(["GET"])
-def test_view(request):
-  log(level=DEBUG, msg="Test Log")
-  return http.HttpResponse("Hello World", content_type="text/plain")
+  Map = geemap.Map(plugin_Draw = True,
+                    Draw_export = True)
 
-@require_http_methods(["POST", "GET"])
-def create_user(request):
-  log(level=DEBUG, msg="Create User!")
+  Map.add_to(figure)
 
-  user = User()
-  user.first_name = "John"
-  user.last_name = "Smith"
+  log(WARNING, request.data);
+  
+  Map.addLayer()
 
-  user.save()
+  figure.render()
+  return HttpResponse(figure);
 
-  response = http.HttpResponse(user, content_type="text/plain")
-  response.status_code = 201
-
-  return response
-
-@require_http_methods(["GET"])
-def get_user(request, id):
-  log(level=DEBUG, msg="Get User!")
-
-  user = User.objects.get(id=id)
-
-  response = http.HttpResponse(serialize("json", [user], fields=('first_name', 'last_name')), content_type="text/json")
-  response.status_code = 200
-
-  return response
 
 @require_http_methods(["GET"])
 def home(request):
+
   figure = folium.Figure()
 
   Map = geemap.Map(plugin_Draw = True,
@@ -65,15 +49,3 @@ def home(request):
   })
 
 template_name = 'map.html'
-
-
-@require_http_methods(["POST", "GET"])
-def processCoords(request):
-  body = request.body.decode('utf-8')
-
-  log(level=WARNING, msg=body)
-  data = json.loads(body)
-  response = http.JsonResponse(data, content_type="text/json")
-  response.status_code = 200
-
-  return response

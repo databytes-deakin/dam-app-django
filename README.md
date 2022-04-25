@@ -52,6 +52,13 @@ $ pip install geemap
 
 $ pip install virtualenv
 ```
+
+You also will most likely need to install the relevant npm dependencies by running:
+
+```bash
+npm i
+```
+
 In case of fresh installation, you may have to create environment first
 ```
 ###setup virtualenv for the Project
