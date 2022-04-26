@@ -12,6 +12,12 @@ from django.core.serializers import serialize
 import folium
 import geemap.foliumap as geemap
 
+from app import config
+import ee
+
+"""Sets up the request to Earth Engine and returns the map information."""
+ee.Initialize(config.EE_CREDENTIALS)
+
 @require_http_methods(["POST"])
 def map(request):
   figure = folium.Figure()
