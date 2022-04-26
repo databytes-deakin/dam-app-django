@@ -1,13 +1,15 @@
-Welcome to DAM Project's documentation!   /// front page 
-===================================
+.. image:: ../images/2022-04-26_16-13.png
+  :width: 400
+  :alt: Alternative text
+  
+Welcome to DAM Project's documentation!   
+=======================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
+**DAM Project** at the Deakin University is an intiative by a group of highly enthused environmental sciences academics, students and engineers. 
+`dam-app-django` is the web application currently hosted at the `thisurldoesnotexistyetbutyeah.com <http://localhost:800>`_. It's an interactive application that allows users to check the water location on the google map.
 
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
+Check out the :doc:`users` section for further information, including
+how to :ref:`developer` information of  the project.
 
 .. note::
 
@@ -18,5 +20,6 @@ Contents
 
 .. toctree::
 
+   users
    developer
-   api
+   
