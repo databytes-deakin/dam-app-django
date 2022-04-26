@@ -1,7 +1,3 @@
-.. image:: ../images/2022-04-26_16-13.png
-  :width: 400
-  :alt: Alternative text
-  
 Welcome to DAM Project's documentation!   
 =======================================
 

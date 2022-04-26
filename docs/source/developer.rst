@@ -1,5 +1,6 @@
 For developers
 ==============
+
 Clone the repository.
 
 .. code-block:: console
@@ -8,14 +9,12 @@ Clone the repository.
     cd dam-app-django/
 
 Installation
-------------
 
 .. code-block:: console
 
     pip install -r requirements.txt
 
 Files
------
 
 .. code-block:: console
 
@@ -24,7 +23,6 @@ Files
     ls
 
 You will see three folders and one file.
-----------------------------------------
 
 .. code-block:: console
 
@@ -37,7 +35,6 @@ You will see three folders and one file.
     hello_world - toy app to play with.
 
 Customize the hello_world/ folder (aka hello_world application) and get comfortable with Django framework.
-----------------------------------------------------------------------------------------------------------
 
 .. code-block:: console
 
@@ -45,7 +42,6 @@ Customize the hello_world/ folder (aka hello_world application) and get comforta
    Project/dam-app-django.git 
 
 If any modules required, try these commands under project folder in terminal
-----------------------------------------------------------------------------
 
 .. code-block:: console
 
@@ -56,14 +52,12 @@ If any modules required, try these commands under project folder in terminal
     $ pip install virtualenv
 
 You also will most likely need to install the relevant npm dependencies by running:
-----------------------------------------------------------------------------------
 
 .. code-block:: console
 
     npm i
 
 In case of fresh installation, you may have to create environment first
------------------------------------------------------------------------
 
 .. code-block:: console
 
@@ -74,59 +68,58 @@ In case of fresh installation, you may have to create environment first
     $ source venv/bin/activate
 
 Run the app
------------
 
 .. code-block:: console
 
     python manage.py runserver
 
 Go to localhost:8000 to check the app running.
----------------------------------------------
+
 
 For Developers 
---------------
+
 
 Logging
--------
+
 
 In the code, when logging, use the below format
------------------------------------------------
+
 
 .. code-block:: console
 
     from logging import log, [logging levels]
     log(level=[...logging level...], msg="Test Log")
 
-References
-----------
+.. References
+.. ----------
 
-.. _installation:
+.. .. _installation:
 
-Installation
-------------
+.. Installation
+.. ------------
 
-To use DAM App, :
+.. To use DAM App, :
 
-.. code-block:: console
+.. .. code-block:: console
 
-   (.venv) $ pip install lumache
+..    (.venv) $ pip install lumache
 
-Creating recipes
-----------------
+.. Creating recipes
+.. ----------------
 
-To retrieve a list of random ingredients,
-you can use the ``lumache.get_random_ingredients()`` function:
+.. To retrieve a list of random ingredients,
+.. you can use the ``lumache.get_random_ingredients()`` function:
 
-.. autofunction:: lumache.get_random_ingredients
+.. .. autofunction:: lumache.get_random_ingredients
 
-The ``kind`` parameter should be either ``"meat"``, ``"fish"``,
-or ``"veggies"``. Otherwise, :py:func:`lumache.get_random_ingredients`
-will raise an exception.
+.. The ``kind`` parameter should be either ``"meat"``, ``"fish"``,
+.. or ``"veggies"``. Otherwise, :py:func:`lumache.get_random_ingredients`
+.. will raise an exception.
 
-.. autoexception:: lumache.InvalidKindError
+.. .. autoexception:: lumache.InvalidKindError
 
-For example:
+.. For example:
 
->>> import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
+.. >>> import lumache
+.. >>> lumache.get_random_ingredients()
+.. ['shells', 'gorgonzola', 'parsley']
