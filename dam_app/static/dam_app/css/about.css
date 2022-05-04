@@ -1,0 +1,90 @@
+.about {
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    right: 0;
+    width: 28em;
+    list-style-type: none;
+    background: #4d4d4f;
+    font-size: 1.2rem;
+    color: #fff;
+    
+    display: flex;
+    flex-direction: column;
+    border-radius: 0 0 0 20px;
+    padding: 16px;
+}
+
+.about-title {
+    border-bottom: solid 2px #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.about-title .icon {
+    width: 2em;
+    height: 2em;
+    padding: 0 1em;
+}
+
+.about h3 {
+    margin: 1em 0 0;
+}
+
+.about p {
+    margin: 0.5em 0;
+}
+
+.about ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.about ul li a {
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+#about-hide {
+    display: none;
+}
+
+#about-show {
+    display: flex;
+}
+
+
+#about-github {
+    background-color: #2da44e;
+    color: white;
+}
+
+#about-github:hover {
+    background-color: #288b44;
+}
+
+#about-github:active {
+    background-color: #227439;
+}
+
+#about-deakin {
+    background-color: #6ed8b8;
+    color: black;
+}
+
+#about-deakin:hover {
+    background-color: #5ab499;
+}
+
+#about-deakin:active {
+    background-color: #48927c;
+}
+
+#about-classifier {
+    color: #2ddd4e;
+}

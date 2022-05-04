@@ -9,6 +9,7 @@
     <meta name="google-signin-client_id" content="193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/reset.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/about.css' %}">
   <script
   src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
   integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
@@ -107,12 +108,38 @@
         <li>
           <a href=""><img class="icon" src="{% static 'dam_app/images/share.svg' %}">Share</a>
         </li>
+        <li>
+          <a href=""><img class="icon" src="{% static 'dam_app/images/cpu.svg' %}">Connected</a>
+        </li>
       </ul>
+    </div>
+    <div class="about">
+      <a class="about-title">
+        <h2>Dam Assessment and Modelling</h2>
+        <img class="icon" id="about-close" src="{% static 'dam_app/images/chevron-up.svg' %}" alt="">
+        <img class="icon" id="about-open" src="{% static 'dam_app/images/chevron-down.svg' %}" alt="">
+      </a>
+      <div class="about-content">
+        <p>DataBytes (C) 2022</p>
+        <h3>About the Project</h3>
+        <p>This project will survey farm dams using computer vision techniques in conjunction with high resolution satellite data, the output of which will be used by scientists and policy makers to model the effects on climate change and facilitate sustainable farming practices.</p>
+        <p>In T3 2021 the Environmental Science Squad created an algorithm which can detect water in high resolution satellite images in Victoria.</p>
+        <h3>Motivation</h3>
+        <p>Farm dams are a high source of greenhouse gasses when not properly managed, producing the equivalent of approximately 385,000 cars per day in Victoria alone! Deakin University is leading ground-breaking research into the effects of farm dams on climate change, however, there is currently limited survey data of farm dams in Australia. </p>
+        <ul>
+          <li><a id="about-github" href="https://github.com/DAM-Project">GitHub</a></li>
+          <li><a id="about-deakin" href="https://www.deakin.edu.au/">Deakin</a></li>
+        </ul>
+      </div>
     </div>
   </body>
   <!-- Page interactivity -->
   <script type="text/javascript">
     $(document).ready(function () {
+      $('.about-content').hide();
+      $('#about-open').show();
+      $('#about-close').hide();
+
       $('.map_icon').on('click', function(e){
         if ($('.map_styles').is(':visible')) {
           $('.second_menu').hide();
@@ -140,7 +167,18 @@
           $('.export_options').addClass('active');
           $('.export_options').show();
       }});
-    });
+      $(".about-title").on('click', function(e) {
+          if ($('.about-content').is(':visible')) {
+            $('.about-content').hide();
+            $('#about-open').show();
+            $('#about-close').hide();
+          } else {
+            $('.about-content').show();
+            $('#about-open').hide();
+            $('#about-close').show();
+          }
+        })
+      });
   </script>
   <!-- Import scripts -->
   <!-- Load the Google Maps API. -->
