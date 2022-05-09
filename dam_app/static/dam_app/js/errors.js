@@ -16,9 +16,15 @@ function handleReportError(drawEvent){
     contentType: 'application/json',
     data: JSON.stringify(geoJSON),
     success: function(resp){
-      console.log("OK", resp);
-      overlay.setOptions({fillColor: "#FFFFFF"});
-      $('#status').html("Error reported.");
+        console.log("OK", resp);
+        overlay.setOptions({fillColor: "#FFFFFF"});
+        $('#status').html("Error reported.");
+        
+      const successTimer = setTimeout(() => {
+        $('#status').html("Ready.");
+        overlay.setMap(null);
+        clearTimeout(successTimer);
+      }, 1500);
     },
     error: function(resp){
       overlay.setOptions({fillColor: "#FF0000"});
