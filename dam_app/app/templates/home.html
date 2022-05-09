@@ -9,10 +9,7 @@
     <meta name="google-signin-client_id" content="193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/reset.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
-  <script
-  src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-  integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
-  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
   <body>
     <!-- Body for the map -->
@@ -20,13 +17,14 @@
     <div class="menu">
       <ul class="menu_top">
         <h3 id="status">Status</h3>
-        <button class="long_btn" onClick="drawRect();">Draw Region</button>
+        <button class="long_btn" onClick="draw();">Draw Region</button>
+        <button class="long_btn" onClick="clearOverlays();">Clear</button>
         <label for="start">Start date:</label>
         <input type="date" id="startDate" name="classifier-start" onChange="predict(rectEvent);"
-              value="2016-07-01">
+          value="2016-07-01">
         <label for="start">End date:</label>
         <input type="date" id="endDate" name="classifier-end" onChange="predict(rectEvent);"
-              value="2020-12-01">
+          value="2020-12-01">
         <li>
           <a href="#" class="map_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/planet.svg' %}" alt="">Map</a>
           <div class="map_styles second_menu">
@@ -107,8 +105,8 @@
         </li>
       </ul>
       <ul class="menu_bottom">
-        <li>
-          <a href=""><img class="icon" src="{% static 'dam_app/images/bug.svg' %}">Errors</a>
+        <li onclick="reportError();">
+          <a href="#"><img class="icon" src="{% static 'dam_app/images/bug.svg' %}">Errors</a>
         </li>
         <li>
           <a href=""><img class="icon" src="{% static 'dam_app/images/share.svg' %}">Share</a>
@@ -149,6 +147,18 @@
     });
   </script>
   <!-- Import scripts -->
+  <script>
+    $(document).ready(() => {
+      // Setup AJAX's csrf token for all requests
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          // TODO: confirm - may be security vulns.
+          xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token|safe }}');
+          xhr.setRequestHeader("content-type", "application/json");
+        }
+      });
+    });
+  </script>
   <!-- Load the Google Maps API. -->
   <script src="https://maps.google.com/maps/api/js?libraries=drawing"></script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -157,4 +167,5 @@
   <script defer src="{% static 'dam_app/js/gee.js' %}"></script>
   <script defer src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
   <script defer src="{% static 'dam_app/js/gee-interface.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/errors.js' %}"></script>
 </html>

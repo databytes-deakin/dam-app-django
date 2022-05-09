@@ -1,50 +1,37 @@
 var drawingManager;
-let rectEvent;
+let drawEvent;
+let mode = null; // possible values are [null, predict, report]
 
 $(document).ready(() => {
-  // Setup Google Oauth https://developers.google.com/earth-engine/cloud/earthengine_cloud_project_setup
   $('#status').html("Authenticating...");
-  ee.data.authenticateViaOauth(
-    "193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com"
-  , () => {
-    $('#status').html("Authentication via OAuth was a success!");
-  }, (e) => {
-    $('#status').html('Authentication via OAuth: ' + e);
-  }, null, () => {
-      $('#status').html('Authenticating by popup...');
-    ee.data.authenticateViaPopup(() => {
-      $('#status').html('Authenticated by popup - success!');
-    }, (e) => {
-      $('#status').html('Authentication error: ' + e);
-    });
-  });
   
-  // Basic options for the Google Map.
-  var mapOptions = {
-    center: new google.maps.LatLng(-37.83, 145.4),
-    zoom: 16,
-    streetViewControl: false,
-  };
-
-  // Create the base Google Map, set up a drawing manager and listen for updates
-  // to the training area rectangle.
-  map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-  drawingManager = new google.maps.drawing.DrawingManager({drawingMode: null});
-  // drawRect();
-  drawingManager.setMap(map);
+  authenticate();
+  
+  initMap();
   
   
-  
-
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
-    rectEvent = event;
-    console.log("loading...");
-    $('#status').html("Loading...");
-    predict(rectEvent);
+  google.maps.event.addListener(drawingManager, 'overlaycomplete', async (event) => {
+    drawEvent = event;
+    drawingManager.setOptions({drawingMode: null});
+    if(mode === null) {
+      $('#status').html("Ready.");
+    }
+    else if(mode === 'predict'){
+      $('#status').html("Loading...");
+      await predict(drawEvent);
+      $('#status').html("Classification complete. Tiles will begin loading");
+      mode = null;
+    }
+    else if(mode === 'report'){
+      $('#status').html("Report error mode");
+      handleReportError(drawEvent);
+      mode = null;
+    }
+    else{
+      $('#status').html("Unsupported Drawing Mode!");
+    }
   });
 });
-
 
 function getRectCoordinates(rect) {
   var bounds = rect.getBounds();
@@ -60,20 +47,19 @@ function getRectCoordinates(rect) {
     [NE_lng, SW_lat],
   ]]};
 }
+
 function getPolyCoordinates(poly) {
   const bounds = poly.getPath().getArray();
   const coords = bounds.map((coord) => [coord.lng(), coord.lat()]);
   return { "type": "Polygon", "coordinates": [coords]};
 }
 
-
-function predict(event) {
-  var poly = event.overlay;
-  drawingManager.setOptions({drawingMode: null});
+async function predict(drawEvent) {
+  var poly = drawEvent.overlay;
   
   $('#status').html("Initialising...");
   
-  ee.initialize();
+  await ee.initialize();
   
   $('#status').html('Classifing...');
   
@@ -90,8 +76,8 @@ function predict(event) {
   var toMonth = toDate.getMonth() + 1;
   var toYear = toDate.getFullYear();
   
-  poly.setVisible(false);
-  classify(
+  await poly.setVisible(false);
+  await classify(
     ee,
     ee.Geometry(getPolyCoordinates(poly)),
     // ee.Geometry(getRectCoordinates(rectangle)),
@@ -99,9 +85,50 @@ function predict(event) {
     [toYear, toMonth, toDay].join('-'));
 }
 
-function drawRect() {
+function draw(m = 'predict') {
+  mode = m;
   drawingManager.setOptions({
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
     drawingControl: false
   });
+}
+
+// Setup Google Oauth https://developers.google.com/earth-engine/cloud/earthengine_cloud_project_setup
+async function authenticate() {
+  await ee.data.authenticateViaOauth(
+    "193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com"
+  , () => {
+    $('#status').html("Authentication via OAuth was a success!");
+  }, (e) => {
+    $('#status').html('Authentication via OAuth: ' + e);
+  }, null, () => {
+      $('#status').html('Authenticating by popup...');
+    ee.data.authenticateViaPopup(() => {
+      $('#status').html('Authenticated by popup - success!');
+    }, (e) => {
+      $('#status').html('Authentication error: ' + e);
+    });
+  });
+}
+
+function initMap() {
+  // Basic options for the Google Map.
+  var mapOptions = {
+    center: new google.maps.LatLng(-37.83, 145.4),
+    zoom: 16,
+    streetViewControl: false,
+  };
+
+  // Create the base Google Map, set up a drawing manager and listen for updates
+  // to the training area rectangle.
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  drawingManager = new google.maps.drawing.DrawingManager({drawingMode: null});
+  
+  drawingManager.setMap(map);
+}
+
+function clearOverlays() {
+  map.overlayMapTypes.clear();
+  $('#status').html('Cleared.');
 }
