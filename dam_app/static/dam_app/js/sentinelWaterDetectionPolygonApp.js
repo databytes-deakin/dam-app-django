@@ -12,7 +12,7 @@ let classifier;
 let BANDS;
 let ic;
 
-function classify(ee, geometry, fromDate, toDate) {
+async function classify(ee, geometry, fromDate, toDate) {
   $('#status').html("Working...");
   if(!cart_classifier){
     cart_classifier = ee.FeatureCollection("users/arunetckumar/cart_classifier_3")
@@ -21,21 +21,23 @@ function classify(ee, geometry, fromDate, toDate) {
   
   // Load using this
   if(!classifier_string)
-    classifier_string = cart_classifier.first().get('classifier');
+    classifier_string = await cart_classifier.first().get('classifier');
   
   if(!classifier)
-    classifier = ee.Classifier.decisionTree(classifier_string);
+    classifier = await ee.Classifier.decisionTree(classifier_string);
 
   
   BANDS = ['B2', 'B3', 'B4', 'B8'];
   if(!ic){
-    ic = Sentinel2A
+    ic = await Sentinel2A
       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 15))
       .select(BANDS);
   }
-  ic = ic.filterDate(fromDate, toDate)
+  ic = await ic.filterDate(fromDate, toDate)
   
-  const classified = ic.median().classify(classifier);
+  $('#status').html("Preprocessing done, beginning classifier...");
+  
+  const classified = await ic.median().classify(classifier);
 
   let skinny = ee.Kernel.gaussian({
     radius: 25,
@@ -51,10 +53,10 @@ function classify(ee, geometry, fromDate, toDate) {
     normalize: true
   });
   
-  let skinnyBlur = classified.convolve(skinny);
-  let fatBlur = classified.convolve(fat);
+  let skinnyBlur = await classified.convolve(skinny);
+  let fatBlur = await classified.convolve(fat);
   
-  let edges = ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
+  let edges = await ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
 
   const palette = [
     '3f608f', // Water
@@ -62,22 +64,14 @@ function classify(ee, geometry, fromDate, toDate) {
     '69854980' // Land
   ]
 
-  let mult = edges.multiply(skinnyBlur);
+  let mult = await edges.multiply(skinnyBlur);
   
-  const final = mult.clip(geometry);
+  const final = await mult.clip(geometry);
   
-  console.log('Add to map');
-  
-  mapId = final.getMap({palette: palette, min: 0, max: 1});
+  mapId = await final.getMap({palette: palette, min: 0, max: 1});
   eeTileSource = new ee.layers.EarthEngineTileSource(mapId);
   overlay = new ee.layers.ImageOverlay(eeTileSource);
   
-  map.overlayMapTypes.push(overlay);
-  
-  map.overlayMapTypes.addListener('tilesloaded', function() {
-    console.log("Map loaded");
-    $('#status').html("Ready.");
-  });
-  
+  await map.overlayMapTypes.push(overlay);
   return {};
 }
