@@ -19,7 +19,14 @@
     <div id="map"></div>
     <div class="menu">
       <ul class="menu_top">
+        <h3 id="status">Status</h3>
         <button class="long_btn" onClick="drawRect();">Draw Rectangle</button>
+        <label for="start">Start date:</label>
+        <input type="date" id="startDate" name="classifier-start" onChange="predict(rectEvent);"
+              value="2016-07-01">
+        <label for="start">End date:</label>
+        <input type="date" id="endDate" name="classifier-end" onChange="predict(rectEvent);"
+              value="2020-12-01">
         <li>
           <a href="#" class="map_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/planet.svg' %}" alt="">Map</a>
           <div class="map_styles second_menu">
