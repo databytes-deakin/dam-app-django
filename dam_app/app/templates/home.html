@@ -4,22 +4,29 @@
   <head>
     <meta charset="UTF-8">
     <title>{{ app_name }}</title>
-    <!-- Header for the map -->
-    {{ map.header.render|safe }}
+    
+    <!-- Client ID -->
+    <meta name="google-signin-client_id" content="193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/reset.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/about.css' %}">
+  <script
+  src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+  integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+  crossorigin="anonymous"></script>
   </head>
   <body>
     <!-- Body for the map -->
-    <div id="map">
-      {{ map.html.render|safe }}
-    </div>
+    <div id="map"></div>
     <div class="menu">
       <ul class="menu_top">
+        <!-- <button class="long_btn" onClick="drawRect();">Draw Rectangle</button> -->
+        <a href="#" class="rectangle_icon first_menu_item" onClick="drawRect();"><img class="icon" src="{% static 'dam_app/images/rectangle.png' %}" alt="">Draw</a>
         <li>
           <a href="#" class="map_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/planet.svg' %}" alt="">Map</a>
           <div class="map_styles second_menu">
             <h3 class="header">Map Style</h3>
-            <ul class="second_level">
+            <ul>
               <li>
                 <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map1.png' %}" alt=""></a>
               </li>
@@ -101,12 +108,38 @@
         <li>
           <a href=""><img class="icon" src="{% static 'dam_app/images/share.svg' %}">Share</a>
         </li>
+        <li>
+          <a href=""><img class="icon" src="{% static 'dam_app/images/cpu.svg' %}">Connected</a>
+        </li>
       </ul>
+    </div>
+    <div class="about">
+      <a class="about-title">
+        <div>Dam Assessment and Modelling</div>
+        <img class="icon" id="about-close" src="{% static 'dam_app/images/chevron-up.svg' %}" alt="">
+        <img class="icon" id="about-open" src="{% static 'dam_app/images/chevron-down.svg' %}" alt="">
+      </a>
+      <div class="about-content">
+        <p>DataBytes &copy 2022</p>
+        <h3>About the Project</h3>
+        <p>This project will survey farm dams using computer vision techniques in conjunction with high resolution satellite data, the output of which will be used by scientists and policy makers to model the effects on climate change and facilitate sustainable farming practices.</p>
+        <p>In T3 2021 the Environmental Science Squad created an algorithm which can detect water in high resolution satellite images in Victoria.</p>
+        <h3>Motivation</h3>
+        <p>Farm dams are a high source of greenhouse gasses when not properly managed, producing the equivalent of approximately 385,000 cars per day in Victoria alone! Deakin University is leading ground-breaking research into the effects of farm dams on climate change, however, there is currently limited survey data of farm dams in Australia. </p>
+        <ul>
+          <li><a id="about-github" href="https://github.com/DAM-Project">GitHub</a></li>
+          <li><a id="about-deakin" href="https://dam-app-django.readthedocs.io/en/latest/">Documentation</a></li>
+        </ul>
+      </div>
     </div>
   </body>
   <!-- Page interactivity -->
   <script type="text/javascript">
     $(document).ready(function () {
+      $('.about-content').hide();
+      $('#about-open').show();
+      $('#about-close').hide();
+
       $('.map_icon').on('click', function(e){
         if ($('.map_styles').is(':visible')) {
           $('.second_menu').hide();
@@ -134,13 +167,26 @@
           $('.export_options').addClass('active');
           $('.export_options').show();
       }});
-    });
+      $(".about-title").on('click', function(e) {
+          if ($('.about-content').is(':visible')) {
+            $('.about-content').hide();
+            $('#about-open').show();
+            $('#about-close').hide();
+          } else {
+            $('.about-content').show();
+            $('#about-open').hide();
+            $('#about-close').show();
+          }
+        })
+      });
   </script>
   <!-- Import scripts -->
+  <!-- Load the Google Maps API. -->
+  <script src="https://maps.google.com/maps/api/js?libraries=drawing"></script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="{% static 'dam_app/js/gee.js' %}"></script>
-  <script src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
-  <script src="{% static 'dam_app/js/gee-interface.js' %}"></script>
-  <script>{{ map.script.render | safe }}</script>
+  <script defer src="{% static 'dam_app/js/map.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/gee.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>
+  <script defer src="{% static 'dam_app/js/gee-interface.js' %}"></script>
 </html>
