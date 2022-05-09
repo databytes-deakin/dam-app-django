@@ -57,9 +57,9 @@ function classify(ee, geometry, fromDate, toDate) {
   let edges = ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
 
   const palette = [
-    '0000FF', // Water
-    '008000', // Veg
-    'A52A2A' // Land
+    '3f608f', // Water
+    '3a9e78', // Veg
+    '69854980' // Land
   ]
 
   let mult = edges.multiply(skinnyBlur);

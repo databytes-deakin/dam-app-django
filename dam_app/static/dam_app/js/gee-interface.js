@@ -33,6 +33,9 @@ $(document).ready(() => {
   drawingManager = new google.maps.drawing.DrawingManager({drawingMode: null});
   // drawRect();
   drawingManager.setMap(map);
+  
+  
+  
 
   google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
     rectEvent = event;
@@ -43,7 +46,7 @@ $(document).ready(() => {
 });
 
 
-function getCoordinates(rect) {
+function getRectCoordinates(rect) {
   var bounds = rect.getBounds();
   const NE_lat = bounds.getNorthEast().lat();
   const NE_lng = bounds.getNorthEast().lng();
@@ -57,10 +60,15 @@ function getCoordinates(rect) {
     [NE_lng, SW_lat],
   ]]};
 }
+function getPolyCoordinates(poly) {
+  const bounds = poly.getPath().getArray();
+  const coords = bounds.map((coord) => [coord.lng(), coord.lat()]);
+  return { "type": "Polygon", "coordinates": [coords]};
+}
 
 
 function predict(event) {
-  var rectangle = event.overlay;
+  var poly = event.overlay;
   drawingManager.setOptions({drawingMode: null});
   
   $('#status').html("Initialising...");
@@ -69,7 +77,8 @@ function predict(event) {
   
   $('#status').html('Classifing...');
   
-  console.log(getCoordinates(rectangle));
+  console.log(getPolyCoordinates(poly));
+  // console.log(getRectCoordinates(rectangle));
   
   var fromDate = new Date($('#startDate').val());
   var fromDay = fromDate.getDate();
@@ -81,17 +90,18 @@ function predict(event) {
   var toMonth = toDate.getMonth() + 1;
   var toYear = toDate.getFullYear();
   
-  rectangle.setVisible(false);
+  poly.setVisible(false);
   classify(
     ee,
-    ee.Geometry(getCoordinates(rectangle)),
+    ee.Geometry(getPolyCoordinates(poly)),
+    // ee.Geometry(getRectCoordinates(rectangle)),
     [fromYear, fromMonth, fromDay,].join('-'),
     [toYear, toMonth, toDay].join('-'));
 }
 
 function drawRect() {
   drawingManager.setOptions({
-    drawingMode: google.maps.drawing.OverlayType.RECTANGLE,
+    drawingMode: google.maps.drawing.OverlayType.POLYGON,
     drawingControl: false
   });
 }
