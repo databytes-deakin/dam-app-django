@@ -3,7 +3,7 @@
     z-index: 99;
     top: 0;
     right: 0;
-    width: 28em;
+    width: 24em;
     list-style-type: none;
     background: #4d4d4f;
     font-size: 1.2rem;
@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     border-radius: 0 0 0 20px;
-    padding: 16px;
+    padding: 24px;
 }
 
 .about-title {
@@ -20,13 +20,18 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
 }
 
+.about-title a {
+    text-align: center;
+}
+
 .about-title .icon {
-    width: 2em;
-    height: 2em;
-    padding: 0 1em;
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0 0 0 0.5em;
 }
 
 .about h3 {
@@ -41,7 +46,8 @@
     list-style-type: none;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    gap: 16px;
 }
 
 .about ul li a {
