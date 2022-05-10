@@ -6,13 +6,13 @@
     width: 24em;
     list-style-type: none;
     background: #4d4d4f;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #fff;
     
     display: flex;
     flex-direction: column;
     border-radius: 0 0 0 20px;
-    padding: 24px;
+    padding: 16px;
 }
 
 .about-title {
@@ -22,6 +22,7 @@
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
+    margin-bottom: 4px;
 }
 
 .about-title a {
@@ -34,7 +35,12 @@
     padding: 0 0 0 0.5em;
 }
 
-.about h3 {
+.about-content { 
+    height: fit-content;
+    overflow-y: hidden;
+}
+
+.about-content h4 {
     margin: 1em 0 0;
 }
 
@@ -64,6 +70,9 @@
     display: flex;
 }
 
+.about-title#mobile {
+    display: none;
+}
 
 #about-github {
     background-color: #2da44e;
@@ -93,4 +102,37 @@
 
 #about-classifier {
     color: #2ddd4e;
+}
+
+@media screen and (max-height: 720px) {
+    .about-content {
+        overflow-y: scroll;
+        height: 60vh;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .about-title#desktop {
+        display: none;
+    }
+
+    .about-title#mobile {
+        display: block;
+    }
+
+    .about {
+        width: 15em;
+    }
+
+    .about-content {
+        overflow-y: scroll;
+        height: 60vh;
+    }
+
+    .about ul {
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
 }
