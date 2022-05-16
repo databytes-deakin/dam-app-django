@@ -132,3 +132,7 @@ function clearOverlays() {
   map.overlayMapTypes.clear();
   $('#status').html('Cleared.');
 }
+
+function changeOpacity(val) {
+  map.overlayMapTypes.forEach((type) => type.setOpacity(val/100))
+}

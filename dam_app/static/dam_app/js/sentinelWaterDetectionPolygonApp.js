@@ -27,8 +27,8 @@ async function classify(ee, geometry, fromDate, toDate) {
     classifier = await ee.Classifier.decisionTree(classifier_string);
 
   
-  BANDS = ['B2', 'B3', 'B4', 'B8'];
   if(!ic){
+    BANDS = ['B2', 'B3', 'B4', 'B8'];
     ic = await Sentinel2A
       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 15))
       .select(BANDS);
