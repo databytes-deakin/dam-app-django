@@ -26,7 +26,6 @@ async function classify(ee, geometry, fromDate, toDate) {
   if(!classifier)
     classifier = await ee.Classifier.decisionTree(classifier_string);
 
-  
   if(!ic){
     BANDS = ['B2', 'B3', 'B4', 'B8'];
     ic = await Sentinel2A
