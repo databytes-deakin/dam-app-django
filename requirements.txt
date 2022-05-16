@@ -1,4 +1,2 @@
 django
-folium
-geemap
 MarkupSafe==2.0.1

@@ -2,62 +2,75 @@
 // TODO: set this up in S3 and link to as a CDN <script src=""></script>
 
 // var map;
+let mapId;
+let eeTileSource;
+let overlay;
+let cart_classifier;
+let Sentinel2A;
+let classifier_string;
+let classifier;
+let BANDS;
+let ic;
 
-function classify(ee, geometry){
-  console.log('Classifier invoked');
+async function classify(ee, geometry, fromDate, toDate) {
+  $('#status').html("Working...");
+  if(!cart_classifier){
+    cart_classifier = ee.FeatureCollection("users/arunetckumar/cart_classifier_3")
+    Sentinel2A = ee.ImageCollection("COPERNICUS/S2_SR");
+  }
   
-  console.log('Init cart_classifier');
-  const cart_classifier = ee.FeatureCollection("users/arunetckumar/cart_classifier_3"),
-      Sentinel2A = ee.ImageCollection("COPERNICUS/S2_SR");
-  
-    console.log('Retrieve classifier');
   // Load using this
-  const classifier_string = cart_classifier.first().get('classifier');
-
-  console.log('Load classifier');
+  if(!classifier_string)
+    classifier_string = await cart_classifier.first().get('classifier');
   
-  const classifier = ee.Classifier.decisionTree(classifier_string);
+  if(!classifier)
+    classifier = await ee.Classifier.decisionTree(classifier_string);
 
+  if(!ic){
+    BANDS = ['B2', 'B3', 'B4', 'B8'];
+    ic = await Sentinel2A
+      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 15))
+      .select(BANDS);
+  }
+  ic = await ic.filterDate(fromDate, toDate)
   
-  console.log('Filter Satellite data');
+  $('#status').html("Preprocessing done, beginning classifier...");
   
-  const BANDS = ['B2', 'B3', 'B4', 'B8'];
+  const classified = await ic.median().classify(classifier);
 
-  const ic = Sentinel2A
-        .filterDate('2016-07-01', '2020-12-01')
-        .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 15))
-        .select(BANDS)
-        .median();
-
-  // var input = ic.median().select(BANDS);
-  console.log('Classify');
-
-  const classified = ic.classify(classifier);
-
-  console.log(classified);
+  let skinny = ee.Kernel.gaussian({
+    radius: 25,
+    sigma: 15,
+    units: 'meters',
+    normalize: true
+  });
+  
+  let fat = ee.Kernel.gaussian({
+    radius: 25,
+    sigma: 20,
+    units: 'meters',
+    normalize: true
+  });
+  
+  let skinnyBlur = await classified.convolve(skinny);
+  let fatBlur = await classified.convolve(fat);
+  
+  let edges = await ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
 
   const palette = [
-    '0000FF', // Water
-    '008000', // Veg
-    'A52A2A' // Land
-  ];
+    '3f608f', // Water
+    '3a9e78', // Veg
+    '69854980' // Land
+  ]
 
-  const final = classified.clip(geometry);
+  let mult = await edges.multiply(skinnyBlur);
   
-  console.log('Add to map');
+  const final = await mult.clip(geometry);
   
-  var mapId = final.getMap({palette: palette, min: 0, max: 2});
-  var eeTileSource = new ee.layers.EarthEngineTileSource(mapId);
-  var overlay = new ee.layers.ImageOverlay(eeTileSource);
-
-  // // Show a count of the number of map tiles remaining.
-  // overlay.addTileCallback(function(event) {
-  //   console.log(event.count + ' tiles remaining.')
-  // });
-
-  // Show the EE map on the Google Map.
-  map.overlayMapTypes.push(overlay);
-
+  mapId = await final.getMap({palette: palette, min: 0, max: 1});
+  eeTileSource = new ee.layers.EarthEngineTileSource(mapId);
+  overlay = new ee.layers.ImageOverlay(eeTileSource);
+  
+  await map.overlayMapTypes.push(overlay);
   return {};
 }
-
