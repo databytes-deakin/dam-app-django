@@ -6,8 +6,34 @@ let geometry;
 let to;
 let from;
 
+let doGaussBlur = false;
 
 $(document).ready(() => {
+  $("#slider-range").slider({
+      range: true,
+      min: new Date('2016.01.01').getTime() / 1000,
+      max: new Date('2019.01.01').getTime() / 1000,
+      step: 86400,
+      values: [new Date('2016.01.01').getTime() / 1000, new Date('2019.01.01').getTime() / 1000],
+      slide: function (event, ui) {
+          $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
+      }
+  });
+  
+  var startPos = $("#slider-range").slider("value");
+  var endPos = '';
+  
+  $("#slider-range").on("slidestop", function(event, ui) {
+    endPos = ui.value;
+    if (startPos != endPos) {
+      updateClassification()
+      var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+      var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
+      $('#status').html("Dates changed to " + fromDate.toDateString() + " - " + toDate.toDateString());
+    }
+    startPos = endPos;
+  });
+  
   $('#status').html("Authenticating...");
   
   authenticate();
@@ -71,12 +97,13 @@ function predict(drawEvent) {
   console.log(getPolyCoordinates(poly));
   // console.log(getRectCoordinates(rectangle));
   
-  var fromDate = new Date($('#startDate').val());
+  var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+  // var fromDate = new Date($('#startDate').val());
   var fromDay = fromDate.getDate();
   var fromMonth = fromDate.getMonth() + 1;
   var fromYear = fromDate.getFullYear();
   
-  var toDate = new Date($('#endDate').val());
+  var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
   var toDay = toDate.getDate();
   var toMonth = toDate.getMonth() + 1;
   var toYear = toDate.getFullYear();
@@ -86,11 +113,30 @@ function predict(drawEvent) {
   geometry = ee.Geometry(getPolyCoordinates(poly));
   to = [toYear, toMonth, toDay].join('-');
   from = [fromYear, fromMonth, fromDay,].join('-');
-  classify(
-    ee,
-    geometry,
-    from,
-    to);
+  updateClassification();
+}
+
+function updateClassification() {
+  if(geometry && to && from)
+  {
+    classify(
+      ee,
+      geometry,
+      from,
+      to);
+  }
+}
+
+function setMapStyle(style="satellite"){
+  $('#status').html("Set map style to " + style);
+  map.setMapTypeId(style);
+}
+
+function toggleBlur(){
+  doGaussBlur = !doGaussBlur;
+  $('#status').html(doGaussBlur ? "Blur ON" : "Blur OFF");
+  $("#blur-toggle").html(doGaussBlur ? "Blur ON" : "Blur OFF");
+  updateClassification();
 }
 
 function draw(m = 'predict') {
@@ -119,6 +165,7 @@ function authenticate() {
   });
 }
 
+
 function copySourceToClipboard() {
   // TODO: This is a better solution, but it should be implemented using GitHub's
   // API instead of a plain GET request. (cors etc.)
@@ -139,21 +186,24 @@ function copySourceToClipboard() {
   if(!geometry || !to || !from)
   {
     console.error('Classifier must run before coping code to clipboard');
+    $('#status').html("Classifier must run before coping code to clipboard");
     return;
   }
   navigator.clipboard.writeText(classifierCode(geometry.toGeoJSONString(), from, to)).then(function() {
     $('#status').html("Copied to clipboard!");
   }, function(err) {
     console.error('Could not copy text: ', err);
+    $('#status').html("Could not copy to clipboard!");
   });
 }
 
 function initMap() {
   // Basic options for the Google Map.
   var mapOptions = {
-    center: new google.maps.LatLng(-37.83, 145.4),
+    center: new google.maps.LatLng(-36.84, 145.4),
     zoom: 16,
     streetViewControl: false,
+    mapTypeId: "hybrid",
   };
 
   // Create the base Google Map, set up a drawing manager and listen for updates
