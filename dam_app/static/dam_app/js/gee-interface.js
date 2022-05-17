@@ -2,6 +2,11 @@ var drawingManager;
 let drawEvent;
 let mode = null; // possible values are [null, predict, report]
 
+let geometry;
+let to;
+let from;
+
+
 $(document).ready(() => {
   $('#status').html("Authenticating...");
   
@@ -10,7 +15,7 @@ $(document).ready(() => {
   initMap();
   
   
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', async (event) => {
+  google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
     drawEvent = event;
     drawingManager.setOptions({drawingMode: null});
     if(mode === null) {
@@ -18,7 +23,7 @@ $(document).ready(() => {
     }
     else if(mode === 'predict'){
       $('#status').html("Loading...");
-      await predict(drawEvent);
+      predict(drawEvent);
       $('#status').html("Classification complete. Tiles will begin loading");
       mode = null;
     }
@@ -54,12 +59,12 @@ function getPolyCoordinates(poly) {
   return { "type": "Polygon", "coordinates": [coords]};
 }
 
-async function predict(drawEvent) {
+function predict(drawEvent) {
   var poly = drawEvent.overlay;
   
   $('#status').html("Initialising...");
   
-  await ee.initialize();
+  ee.initialize();
   
   $('#status').html('Classifing...');
   
@@ -76,13 +81,16 @@ async function predict(drawEvent) {
   var toMonth = toDate.getMonth() + 1;
   var toYear = toDate.getFullYear();
   
-  await poly.setVisible(false);
-  await classify(
+  poly.setVisible(false);
+  
+  geometry = ee.Geometry(getPolyCoordinates(poly));
+  to = [toYear, toMonth, toDay].join('-');
+  from = [fromYear, fromMonth, fromDay,].join('-');
+  classify(
     ee,
-    ee.Geometry(getPolyCoordinates(poly)),
-    // ee.Geometry(getRectCoordinates(rectangle)),
-    [fromYear, fromMonth, fromDay,].join('-'),
-    [toYear, toMonth, toDay].join('-'));
+    geometry,
+    from,
+    to);
 }
 
 function draw(m = 'predict') {
@@ -94,8 +102,8 @@ function draw(m = 'predict') {
 }
 
 // Setup Google Oauth https://developers.google.com/earth-engine/cloud/earthengine_cloud_project_setup
-async function authenticate() {
-  await ee.data.authenticateViaOauth(
+function authenticate() {
+  ee.data.authenticateViaOauth(
     "193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com"
   , () => {
     $('#status').html("Authentication via OAuth was a success!");
@@ -108,6 +116,35 @@ async function authenticate() {
     }, (e) => {
       $('#status').html('Authentication error: ' + e);
     });
+  });
+}
+
+function copySourceToClipboard() {
+  // TODO: This is a better solution, but it should be implemented using GitHub's
+  // API instead of a plain GET request. (cors etc.)
+  // $.ajax({
+  //   method:'GET',
+  //   url: "https://raw.githubusercontent.com/DAM-Project/machine-learning/main/sentinel-water-detection/model-development/js/sentinelWaterDetectionPolygonApp.js",
+  //   dataType: "text/plain",
+  //   contentType: 'text/plain',
+  //   success: function(resp){
+  //     console.log("OK", resp);
+  //     $('#status').html("Copied to clipboard!");
+  //   },
+  //   error: function(resp){
+  //     console.error("Didn't receive OK response" , resp);
+  //     $('#status').html("Prolem fetching classifier source!");
+  //   }
+  // });
+  if(!geometry || !to || !from)
+  {
+    console.error('Classifier must run before coping code to clipboard');
+    return;
+  }
+  navigator.clipboard.writeText(classifierCode(geometry.toGeoJSONString(), from, to)).then(function() {
+    $('#status').html("Copied to clipboard!");
+  }, function(err) {
+    console.error('Could not copy text: ', err);
   });
 }
 
