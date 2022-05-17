@@ -134,4 +134,5 @@ function clearOverlays() {
 }
 
 function changeOpacity(val) {
-  map.overlayMapTypes.forEach((type) => type.setOpacity(val/100))
+  map.overlayMapTypes.forEach((type) => type.setOpacity(val/100));
+}
