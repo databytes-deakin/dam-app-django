@@ -10,10 +10,10 @@
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/reset.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/home.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/about.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
     <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-  </head>
   <body>
     <!-- Body for the map -->
     <div id="map"></div>
@@ -113,12 +113,39 @@
         <li>
           <a href=""><img class="icon" src="{% static 'dam_app/images/share.svg' %}">Share</a>
         </li>
+        <li>
+          <a href=""><img class="icon" src="{% static 'dam_app/images/cpu.svg' %}">Connected</a>
+        </li>
       </ul>
+    </div>
+    <div class="about">
+      <a class="about-title" id="desktop">
+        <h4>Dam Assessment and Modelling</h4>
+        <img class="icon" id="about-close" src="{% static 'dam_app/images/chevron-up.svg' %}" alt="">
+        <img class="icon" id="about-open" src="{% static 'dam_app/images/chevron-down.svg' %}" alt="">
+      </a>
+      <a class="about-title" id="mobile"><h4>DAM</h4></a>
+      <div class="about-content">
+        <p>DataBytes &copy 2022</p>
+        <h4>About the Project</h4>
+        <p>This project will survey farm dams using computer vision techniques in conjunction with high resolution satellite data, the output of which will be used by scientists and policy makers to model the effects on climate change and facilitate sustainable farming practices.</p>
+        <p>In T3 2021 the Environmental Science Squad created an algorithm which can detect water in high resolution satellite images in Victoria.</p>
+        <h4>Motivation</h4>
+        <p>Farm dams are a high source of greenhouse gasses when not properly managed, producing the equivalent of approximately 385,000 cars per day in Victoria alone! Deakin University is leading ground-breaking research into the effects of farm dams on climate change, however, there is currently limited survey data of farm dams in Australia. </p>
+        <ul>
+          <li><a id="about-github" href="https://github.com/DAM-Project">GitHub</a></li>
+          <li><a id="about-deakin" href="https://dam-app-django.readthedocs.io/en/latest/">Documentation</a></li>
+        </ul>
+      </div>
     </div>
   </body>
   <!-- Page interactivity -->
   <script type="text/javascript">
     $(document).ready(function () {
+      $('.about-content').hide();
+      $('#about-open').show();
+      $('#about-close').hide();
+
       $('.map_icon').on('click', function(e){
         if ($('.map_styles').is(':visible')) {
           $('.second_menu').hide();
@@ -146,7 +173,18 @@
           $('.export_options').addClass('active');
           $('.export_options').show();
       }});
-    });
+      $(".about-title").on('click', function(e) {
+          if ($('.about-content').is(':visible')) {
+            $('.about-content').hide();
+            $('#about-open').show();
+            $('#about-close').hide();
+          } else {
+            $('.about-content').show();
+            $('#about-open').hide();
+            $('#about-close').show();
+          }
+        })
+      });
   </script>
   <!-- Import scripts -->
   <script>
