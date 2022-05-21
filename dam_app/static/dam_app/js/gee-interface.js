@@ -1,33 +1,209 @@
 var drawingManager;
+let drawEvent;
+let mode = null; // possible values are [null, predict, report]
+
+let geometry;
+let to;
+let from;
+
+let doGaussBlur = false;
 
 $(document).ready(() => {
+  $("#slider-range").slider({
+      range: true,
+      min: new Date('2016.01.01').getTime() / 1000,
+      max: new Date('2019.01.01').getTime() / 1000,
+      step: 86400,
+      values: [new Date('2016.01.01').getTime() / 1000, new Date('2019.01.01').getTime() / 1000],
+      slide: function (event, ui) {
+          $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
+      }
+  });
   
-  console.log('GEE init...');
+  var startPos = $("#slider-range").slider("value");
+  var endPos = '';
   
-  // Setup Google Oauth https://developers.google.com/earth-engine/cloud/earthengine_cloud_project_setup
-  console.log("Authenticating...");
+  $("#slider-range").on("slidestop", function(event, ui) {
+    endPos = ui.value;
+    if (startPos != endPos) {
+      updateClassification()
+      var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+      var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
+      $('#status').html("Dates changed to " + fromDate.toDateString() + " - " + toDate.toDateString());
+    }
+    startPos = endPos;
+  });
+  
+  $('#status').html("Authenticating...");
+  
+  authenticate();
+  
+  initMap();
+  
+  
+  google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
+    drawEvent = event;
+    drawingManager.setOptions({drawingMode: null});
+    if(mode === null) {
+      $('#status').html("Ready.");
+    }
+    else if(mode === 'predict'){
+      $('#status').html("Loading...");
+      predict(drawEvent);
+      $('#status').html("Classification complete. Tiles will begin loading");
+      mode = null;
+    }
+    else if(mode === 'report'){
+      $('#status').html("Report error mode");
+      handleReportError(drawEvent);
+      mode = null;
+    }
+    else{
+      $('#status').html("Unsupported Drawing Mode!");
+    }
+  });
+});
+
+function getRectCoordinates(rect) {
+  var bounds = rect.getBounds();
+  const NE_lat = bounds.getNorthEast().lat();
+  const NE_lng = bounds.getNorthEast().lng();
+  const SW_lat = bounds.getSouthWest().lat();
+  const SW_lng = bounds.getSouthWest().lng();
+  
+  return { "type": "Polygon", "coordinates": [[
+    [SW_lng, SW_lat],
+    [SW_lng, NE_lat],
+    [NE_lng, NE_lat],
+    [NE_lng, SW_lat],
+  ]]};
+}
+
+function getPolyCoordinates(poly) {
+  const bounds = poly.getPath().getArray();
+  const coords = bounds.map((coord) => [coord.lng(), coord.lat()]);
+  return { "type": "Polygon", "coordinates": [coords]};
+}
+
+function predict(drawEvent) {
+  var poly = drawEvent.overlay;
+  
+  $('#status').html("Initialising...");
+  
+  ee.initialize();
+  
+  $('#status').html('Classifing...');
+  
+  console.log(getPolyCoordinates(poly));
+  // console.log(getRectCoordinates(rectangle));
+  
+  var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+  // var fromDate = new Date($('#startDate').val());
+  var fromDay = fromDate.getDate();
+  var fromMonth = fromDate.getMonth() + 1;
+  var fromYear = fromDate.getFullYear();
+  
+  var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
+  var toDay = toDate.getDate();
+  var toMonth = toDate.getMonth() + 1;
+  var toYear = toDate.getFullYear();
+  
+  poly.setVisible(false);
+  
+  geometry = ee.Geometry(getPolyCoordinates(poly));
+  to = [toYear, toMonth, toDay].join('-');
+  from = [fromYear, fromMonth, fromDay,].join('-');
+  updateClassification();
+}
+
+function updateClassification() {
+  if(geometry && to && from)
+  {
+    classify(
+      ee,
+      geometry,
+      from,
+      to);
+  }
+}
+
+function setMapStyle(style="satellite"){
+  $('#status').html("Set map style to " + style);
+  map.setMapTypeId(style);
+}
+
+function toggleBlur(){
+  doGaussBlur = !doGaussBlur;
+  $('#status').html(doGaussBlur ? "Blur ON" : "Blur OFF");
+  $("#blur-toggle").html(doGaussBlur ? "Blur ON" : "Blur OFF");
+  updateClassification();
+}
+
+function draw(m = 'predict') {
+  mode = m;
+  drawingManager.setOptions({
+    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+    drawingControl: false
+  });
+}
+
+// Setup Google Oauth https://developers.google.com/earth-engine/cloud/earthengine_cloud_project_setup
+function authenticate() {
   ee.data.authenticateViaOauth(
     "193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com"
   , () => {
-    console.log("Authentication via OAuth was a success!");
+    $('#status').html("Authentication via OAuth was a success!");
   }, (e) => {
-    console.error('Authentication via OAuth: ' + e);
+    $('#status').html('Authentication via OAuth: ' + e);
   }, null, () => {
-    console.log('Authenticating by popup...');
+      $('#status').html('Authenticating by popup...');
     ee.data.authenticateViaPopup(() => {
-      console.log('Authenticated by popup - success!');
+      $('#status').html('Authenticated by popup - success!');
     }, (e) => {
-      console.error('Authentication error: ' + e);
+      $('#status').html('Authentication error: ' + e);
     });
   });
-  
-  console.log('Finished Auth.');
-  
+}
+
+
+function copySourceToClipboard() {
+  // TODO: This is a better solution, but it should be implemented using GitHub's
+  // API instead of a plain GET request. (cors etc.)
+  // $.ajax({
+  //   method:'GET',
+  //   url: "https://raw.githubusercontent.com/DAM-Project/machine-learning/main/sentinel-water-detection/model-development/js/sentinelWaterDetectionPolygonApp.js",
+  //   dataType: "text/plain",
+  //   contentType: 'text/plain',
+  //   success: function(resp){
+  //     console.log("OK", resp);
+  //     $('#status').html("Copied to clipboard!");
+  //   },
+  //   error: function(resp){
+  //     console.error("Didn't receive OK response" , resp);
+  //     $('#status').html("Prolem fetching classifier source!");
+  //   }
+  // });
+  if(!geometry || !to || !from)
+  {
+    console.error('Classifier must run before coping code to clipboard');
+    $('#status').html("Classifier must run before coping code to clipboard");
+    return;
+  }
+  navigator.clipboard.writeText(classifierCode(geometry.toGeoJSONString(), from, to)).then(function() {
+    $('#status').html("Copied to clipboard!");
+  }, function(err) {
+    console.error('Could not copy text: ', err);
+    $('#status').html("Could not copy to clipboard!");
+  });
+}
+
+function initMap() {
   // Basic options for the Google Map.
   var mapOptions = {
-    center: new google.maps.LatLng(-37.8, 144),
-    zoom: 13,
+    center: new google.maps.LatLng(-36.84, 145.4),
+    zoom: 16,
     streetViewControl: false,
+    mapTypeId: "hybrid",
   };
 
   // Create the base Google Map, set up a drawing manager and listen for updates
@@ -35,47 +211,15 @@ $(document).ready(() => {
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   drawingManager = new google.maps.drawing.DrawingManager({drawingMode: null});
-  // drawRect();
-  drawingManager.setMap(map);
-
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', predict);
-
-  function getCoordinates(rect) {
-    var bounds = rect.getBounds();
-    const NE_lat = bounds.getNorthEast().lat();
-    const NE_lng = bounds.getNorthEast().lng();
-    const SW_lat = bounds.getSouthWest().lat();
-    const SW_lng = bounds.getSouthWest().lng();
-    
-    return { "type": "Polygon", "coordinates": [[
-      [SW_lng, SW_lat],
-      [SW_lng, NE_lat],
-      [NE_lng, NE_lat],
-      [NE_lng, SW_lat],
-    ]]};
-  }
   
-  function predict(event) {
-    var rectangle = event.overlay;
-    map.overlayMapTypes.pop();
-    map.overlayMapTypes.pop();
-    drawingManager.setOptions({drawingMode: null});
-    
-    console.log("Initialising...");
-    
-    ee.initialize();
-    
-    console.log('Classify!');
-    
-    console.log(getCoordinates(rectangle));
-    
-    classify(ee, ee.Geometry(getCoordinates(rectangle)));
-  }  
-});
+  drawingManager.setMap(map);
+}
 
-function drawRect() {
-  drawingManager.setOptions({
-    drawingMode: google.maps.drawing.OverlayType.RECTANGLE,
-    drawingControl: false
-  });
+function clearOverlays() {
+  map.overlayMapTypes.clear();
+  $('#status').html('Cleared.');
+}
+
+function changeOpacity(val) {
+  map.overlayMapTypes.forEach((type) => type.setOpacity(val/100));
 }
