@@ -17,7 +17,7 @@ html{
     height: 100%;
     list-style-type: none;
     background: #4d4d4f;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     color: #fff;
     
     display: flex;
@@ -33,7 +33,7 @@ html{
   .menu a.first_menu_item.active {
     color: #ffffff;
     display: block;
-    padding: 0.75em 0.5em;
+    padding: 1em;
     text-decoration: none;
     transition: all 0.1s ease-in-out;
     display:flex;
@@ -50,13 +50,15 @@ html{
   .menu ul.menu_bottom {
     position: fixed;
     bottom: 0;
-
+    padding-left: 0.25em;
+    list-style-type: none;
   }
+
   .icon {
     display: inline-block;
     width: 1.1em;
     height: 1.1em;
-    padding-right: 1em;
+    padding: 0 1em;
   }
 
   .second_menu {
@@ -88,7 +90,6 @@ html{
   font-size: 1.1em;
   margin-top: 0.75em;
 }
-
 
 /****** *********/
 .long_btn {
@@ -124,4 +125,24 @@ html{
   text-decoration: none;
   background-color: #454545 !important;
 
+}
+
+
+@media screen and (max-width: 768px) {
+  .menu {
+    width: 9rem;
+  }
+
+  .menu a {
+    padding: 0.75em;
+  }
+
+  .second_menu {
+    left: 9rem;
+    min-width: 12em;
+  }
+
+  .icon {
+    padding: 0 0.75em 0 0;
+  }
 }

@@ -9,41 +9,41 @@
     <meta name="google-signin-client_id" content="193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/reset.css' %}">
     <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/menu.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/home.css' %}">
+    <link rel="stylesheet" type='text/css' href="{% static 'dam_app/css/about.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  </head>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+    <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
   <body>
     <!-- Body for the map -->
     <div id="map"></div>
     <div class="menu">
       <ul class="menu_top">
-        <h3 id="status">Status</h3>
-        <a href="#" class="rectangle_icon first_menu_item" onClick="drawRect();"><img class="icon" src="{% static 'dam_app/images/rectangle.png' %}" alt="">Draw Region</a>
+        <h5 id="status">Status</h5>
+        <a href="#" class="rectangle_icon first_menu_item" onClick="draw();"><img class="icon" src="{% static 'dam_app/images/rectangle.png' %}" alt="">Draw Region</a>
         <button class="long_btn" onClick="clearOverlays();">Clear</button>
+        Date Range: <div id="slider-range"></div>
+        <div id="date-range"></div>
         Opacity: <input type="range" min="0" max="100" value="100" class="slider" id="opacity" oninput="changeOpacity(this.value);"> <br/>
-        <label for="start">Start date:</label>
-        <input type="date" id="startDate" name="classifier-start" onChange="predict(rectEvent);"
-          value="2016-07-01">
-        <label for="start">End date:</label>
-        <input type="date" id="endDate" name="classifier-end" onChange="predict(rectEvent);"
-          value="2020-12-01">
+        <button id="blur-toggle" onClick="toggleBlur();">Blur OFF</button>
         <li>
           <a href="#" class="map_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/planet.svg' %}" alt="">Map</a>
           <div class="map_styles second_menu">
             <h3 class="header">Map Style</h3>
             <ul>
               <li>
-                <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map1.png' %}" alt=""></a>
+                <a href="#" onClick="setMapStyle('terrain')"><img class="big_icon" src="{% static 'dam_app/images/map1.png' %}" alt=""></a>
               </li>
               <li>
-                <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map2.png' %}" alt=""></a>
+                <a href="#" onClick="setMapStyle('hybrid')"><img class="big_icon" src="{% static 'dam_app/images/map2.png' %}" alt=""></a>
               </li>
               <li>
-                <a href="#"><img class="big_icon" src="{% static 'dam_app/images/map3.png' %}" alt=""></a>
+                <a href="#" onClick="setMapStyle('roadmap')"><img class="big_icon" src="{% static 'dam_app/images/map3.png' %}" alt=""></a>
               </li>
             </ul>
           </div>
         </li>
-        <li>
+        <!-- <li>
           <a href="#" class="classifier_icon first_menu_item"><img class="icon" src="{% static 'dam_app/images/cube.svg' %}" alt="">Classifier</a>
           <div class="classifier_options second_menu">
             <ul>
@@ -60,13 +60,14 @@
               </li>
             </ul>
           </div>
-        </li>
+        </li> -->
         <li>
           <a href="#" class="export_icon first_menu_item">
             <img class="icon" src="{% static 'dam_app/images/export.svg' %}" alt="">Export
           </a>
           <div class="export_options second_menu">
-            <h3 class="header"><img class="icon" src="{% static 'dam_app/images/export.svg' %}" alt="">Map Export</h3>
+            <a class="long_btn" onClick="copySourceToClipboard();">Download Source</a>
+            <!-- <h3 class="header"><img class="icon" src="{% static 'dam_app/images/export.svg' %}" alt="">Map Export</h3>
             <ul>
               <li>
                 <a  class="long_btn">GEO-TIFF</a>
@@ -101,7 +102,7 @@
               <li>
                 <a  class="long_btn">CSV</a>
               </li>
-            </ul>
+            </ul> -->
           </div>
         </li>
       </ul>
@@ -112,12 +113,39 @@
         <li>
           <a href=""><img class="icon" src="{% static 'dam_app/images/share.svg' %}">Share</a>
         </li>
+        <li>
+          <a href=""><img class="icon" src="{% static 'dam_app/images/cpu.svg' %}">Connected</a>
+        </li>
       </ul>
+    </div>
+    <div class="about">
+      <a class="about-title" id="desktop">
+        <h4>Dam Assessment and Modelling</h4>
+        <img class="icon" id="about-close" src="{% static 'dam_app/images/chevron-up.svg' %}" alt="">
+        <img class="icon" id="about-open" src="{% static 'dam_app/images/chevron-down.svg' %}" alt="">
+      </a>
+      <a class="about-title" id="mobile"><h4>DAM</h4></a>
+      <div class="about-content">
+        <p>DataBytes &copy 2022</p>
+        <h4>About the Project</h4>
+        <p>This project will survey farm dams using computer vision techniques in conjunction with high resolution satellite data, the output of which will be used by scientists and policy makers to model the effects on climate change and facilitate sustainable farming practices.</p>
+        <p>In T3 2021 the Environmental Science Squad created an algorithm which can detect water in high resolution satellite images in Victoria.</p>
+        <h4>Motivation</h4>
+        <p>Farm dams are a high source of greenhouse gasses when not properly managed, producing the equivalent of approximately 385,000 cars per day in Victoria alone! Deakin University is leading ground-breaking research into the effects of farm dams on climate change, however, there is currently limited survey data of farm dams in Australia. </p>
+        <ul>
+          <li><a id="about-github" href="https://github.com/DAM-Project">GitHub</a></li>
+          <li><a id="about-deakin" href="https://dam-app-django.readthedocs.io/en/latest/">Documentation</a></li>
+        </ul>
+      </div>
     </div>
   </body>
   <!-- Page interactivity -->
   <script type="text/javascript">
     $(document).ready(function () {
+      $('.about-content').hide();
+      $('#about-open').show();
+      $('#about-close').hide();
+
       $('.map_icon').on('click', function(e){
         if ($('.map_styles').is(':visible')) {
           $('.second_menu').hide();
@@ -145,7 +173,18 @@
           $('.export_options').addClass('active');
           $('.export_options').show();
       }});
-    });
+      $(".about-title").on('click', function(e) {
+          if ($('.about-content').is(':visible')) {
+            $('.about-content').hide();
+            $('#about-open').show();
+            $('#about-close').hide();
+          } else {
+            $('.about-content').show();
+            $('#about-open').hide();
+            $('#about-close').show();
+          }
+        })
+      });
   </script>
   <!-- Import scripts -->
   <script>
@@ -164,6 +203,7 @@
   <script src="https://maps.google.com/maps/api/js?libraries=drawing"></script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="{% static 'dam_app/js/classifier.js' %}"></script>
   <script defer src="{% static 'dam_app/js/map.js' %}"></script>
   <script defer src="{% static 'dam_app/js/gee.js' %}"></script>
   <script defer src="{% static 'dam_app/js/sentinelWaterDetectionPolygonApp.js' %}"></script>

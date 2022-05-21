@@ -2,7 +2,38 @@ var drawingManager;
 let drawEvent;
 let mode = null; // possible values are [null, predict, report]
 
+let geometry;
+let to;
+let from;
+
+let doGaussBlur = false;
+
 $(document).ready(() => {
+  $("#slider-range").slider({
+      range: true,
+      min: new Date('2016.01.01').getTime() / 1000,
+      max: new Date('2019.01.01').getTime() / 1000,
+      step: 86400,
+      values: [new Date('2016.01.01').getTime() / 1000, new Date('2019.01.01').getTime() / 1000],
+      slide: function (event, ui) {
+          $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
+      }
+  });
+  
+  var startPos = $("#slider-range").slider("value");
+  var endPos = '';
+  
+  $("#slider-range").on("slidestop", function(event, ui) {
+    endPos = ui.value;
+    if (startPos != endPos) {
+      updateClassification()
+      var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+      var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
+      $('#status').html("Dates changed to " + fromDate.toDateString() + " - " + toDate.toDateString());
+    }
+    startPos = endPos;
+  });
+  
   $('#status').html("Authenticating...");
   
   authenticate();
@@ -10,7 +41,7 @@ $(document).ready(() => {
   initMap();
   
   
-  google.maps.event.addListener(drawingManager, 'overlaycomplete', async (event) => {
+  google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
     drawEvent = event;
     drawingManager.setOptions({drawingMode: null});
     if(mode === null) {
@@ -18,7 +49,7 @@ $(document).ready(() => {
     }
     else if(mode === 'predict'){
       $('#status').html("Loading...");
-      await predict(drawEvent);
+      predict(drawEvent);
       $('#status').html("Classification complete. Tiles will begin loading");
       mode = null;
     }
@@ -54,35 +85,58 @@ function getPolyCoordinates(poly) {
   return { "type": "Polygon", "coordinates": [coords]};
 }
 
-async function predict(drawEvent) {
+function predict(drawEvent) {
   var poly = drawEvent.overlay;
   
   $('#status').html("Initialising...");
   
-  await ee.initialize();
+  ee.initialize();
   
   $('#status').html('Classifing...');
   
   console.log(getPolyCoordinates(poly));
   // console.log(getRectCoordinates(rectangle));
   
-  var fromDate = new Date($('#startDate').val());
+  var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+  // var fromDate = new Date($('#startDate').val());
   var fromDay = fromDate.getDate();
   var fromMonth = fromDate.getMonth() + 1;
   var fromYear = fromDate.getFullYear();
   
-  var toDate = new Date($('#endDate').val());
+  var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
   var toDay = toDate.getDate();
   var toMonth = toDate.getMonth() + 1;
   var toYear = toDate.getFullYear();
   
-  await poly.setVisible(false);
-  await classify(
-    ee,
-    ee.Geometry(getPolyCoordinates(poly)),
-    // ee.Geometry(getRectCoordinates(rectangle)),
-    [fromYear, fromMonth, fromDay,].join('-'),
-    [toYear, toMonth, toDay].join('-'));
+  poly.setVisible(false);
+  
+  geometry = ee.Geometry(getPolyCoordinates(poly));
+  to = [toYear, toMonth, toDay].join('-');
+  from = [fromYear, fromMonth, fromDay,].join('-');
+  updateClassification();
+}
+
+function updateClassification() {
+  if(geometry && to && from)
+  {
+    classify(
+      ee,
+      geometry,
+      from,
+      to);
+  }
+}
+
+function setMapStyle(style="satellite"){
+  $('#status').html("Set map style to " + style);
+  map.setMapTypeId(style);
+}
+
+function toggleBlur(){
+  doGaussBlur = !doGaussBlur;
+  $('#status').html(doGaussBlur ? "Blur ON" : "Blur OFF");
+  $("#blur-toggle").html(doGaussBlur ? "Blur ON" : "Blur OFF");
+  updateClassification();
 }
 
 function draw(m = 'predict') {
@@ -94,8 +148,8 @@ function draw(m = 'predict') {
 }
 
 // Setup Google Oauth https://developers.google.com/earth-engine/cloud/earthengine_cloud_project_setup
-async function authenticate() {
-  await ee.data.authenticateViaOauth(
+function authenticate() {
+  ee.data.authenticateViaOauth(
     "193616559408-1hjmtni7oi3vm0g6ri421ccjumuflfef.apps.googleusercontent.com"
   , () => {
     $('#status').html("Authentication via OAuth was a success!");
@@ -111,12 +165,45 @@ async function authenticate() {
   });
 }
 
+
+function copySourceToClipboard() {
+  // TODO: This is a better solution, but it should be implemented using GitHub's
+  // API instead of a plain GET request. (cors etc.)
+  // $.ajax({
+  //   method:'GET',
+  //   url: "https://raw.githubusercontent.com/DAM-Project/machine-learning/main/sentinel-water-detection/model-development/js/sentinelWaterDetectionPolygonApp.js",
+  //   dataType: "text/plain",
+  //   contentType: 'text/plain',
+  //   success: function(resp){
+  //     console.log("OK", resp);
+  //     $('#status').html("Copied to clipboard!");
+  //   },
+  //   error: function(resp){
+  //     console.error("Didn't receive OK response" , resp);
+  //     $('#status').html("Prolem fetching classifier source!");
+  //   }
+  // });
+  if(!geometry || !to || !from)
+  {
+    console.error('Classifier must run before coping code to clipboard');
+    $('#status').html("Classifier must run before coping code to clipboard");
+    return;
+  }
+  navigator.clipboard.writeText(classifierCode(geometry.toGeoJSONString(), from, to)).then(function() {
+    $('#status').html("Copied to clipboard!");
+  }, function(err) {
+    console.error('Could not copy text: ', err);
+    $('#status').html("Could not copy to clipboard!");
+  });
+}
+
 function initMap() {
   // Basic options for the Google Map.
   var mapOptions = {
-    center: new google.maps.LatLng(-37.83, 145.4),
+    center: new google.maps.LatLng(-36.84, 145.4),
     zoom: 16,
     streetViewControl: false,
+    mapTypeId: "hybrid",
   };
 
   // Create the base Google Map, set up a drawing manager and listen for updates
@@ -134,4 +221,5 @@ function clearOverlays() {
 }
 
 function changeOpacity(val) {
-  map.overlayMapTypes.forEach((type) => type.setOpacity(val/100))
+  map.overlayMapTypes.forEach((type) => type.setOpacity(val/100));
+}

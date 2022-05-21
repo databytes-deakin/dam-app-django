@@ -36,36 +36,39 @@ async function classify(ee, geometry, fromDate, toDate) {
   
   $('#status').html("Preprocessing done, beginning classifier...");
   
-  const classified = await ic.median().classify(classifier);
-
-  let skinny = ee.Kernel.gaussian({
-    radius: 25,
-    sigma: 15,
-    units: 'meters',
-    normalize: true
-  });
+  var final = await ic.median().classify(classifier);
   
-  let fat = ee.Kernel.gaussian({
-    radius: 25,
-    sigma: 20,
-    units: 'meters',
-    normalize: true
-  });
+  if(doGaussBlur === true){
+    let skinny = ee.Kernel.gaussian({
+      radius: 25,
+      sigma: 15,
+      units: 'meters',
+      normalize: true
+    });
+    
+    let fat = ee.Kernel.gaussian({
+      radius: 25,
+      sigma: 20,
+      units: 'meters',
+      normalize: true
+    });
+    
+    let skinnyBlur = await final.convolve(skinny);
+    let fatBlur = await final.convolve(fat);
+    
+    let edges = await ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
   
-  let skinnyBlur = await classified.convolve(skinny);
-  let fatBlur = await classified.convolve(fat);
   
-  let edges = await ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
-
+    final = await edges.multiply(skinnyBlur);
+  }
+  
   const palette = [
     '3f608f', // Water
     '3a9e78', // Veg
     '69854980' // Land
   ]
-
-  let mult = await edges.multiply(skinnyBlur);
   
-  const final = await mult.clip(geometry);
+  final = await final.clip(geometry);
   
   mapId = await final.getMap({palette: palette, min: 0, max: 1});
   eeTileSource = new ee.layers.EarthEngineTileSource(mapId);
