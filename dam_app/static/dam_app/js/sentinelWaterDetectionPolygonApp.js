@@ -13,7 +13,6 @@ let BANDS;
 let ic;
 
 async function classify(ee, geometry, fromDate, toDate) {
-  $('#status').html("Working...");
   if(!cart_classifier){
     cart_classifier = ee.FeatureCollection("users/arunetckumar/cart_classifier_3")
     Sentinel2A = ee.ImageCollection("COPERNICUS/S2_SR");
@@ -21,22 +20,20 @@ async function classify(ee, geometry, fromDate, toDate) {
   
   // Load using this
   if(!classifier_string)
-    classifier_string = await cart_classifier.first().get('classifier');
+    classifier_string = cart_classifier.first().get('classifier');
   
   if(!classifier)
-    classifier = await ee.Classifier.decisionTree(classifier_string);
+    classifier = ee.Classifier.decisionTree(classifier_string);
 
   if(!ic){
     BANDS = ['B2', 'B3', 'B4', 'B8'];
-    ic = await Sentinel2A
+    ic = Sentinel2A
       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 15))
       .select(BANDS);
   }
-  ic = await ic.filterDate(fromDate, toDate)
+  ic = ic.filterDate(fromDate, toDate)
   
-  $('#status').html("Preprocessing done, beginning classifier...");
-  
-  var final = await ic.median().classify(classifier);
+  var final = ic.median().classify(classifier);
   
   if(doGaussBlur === true){
     let skinny = ee.Kernel.gaussian({
@@ -57,15 +54,14 @@ async function classify(ee, geometry, fromDate, toDate) {
     let fatBlur = await final.convolve(fat);
     
     let edges = await ee.Algorithms.CannyEdgeDetector(fatBlur, 0.2, 0).multiply(ee.Image(5)).add(ee.Image(1)).convolve(fat);
-  
-  
+    
     final = await edges.multiply(skinnyBlur);
   }
   
   const palette = [
     '3f608f', // Water
     '3a9e78', // Veg
-    '69854980' // Land
+    '698549' // Land
   ]
   
   final = await final.clip(geometry);
