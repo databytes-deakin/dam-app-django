@@ -25,11 +25,13 @@ $(document).ready(() => {
   
   $("#slider-range").on("slidestop", function(event, ui) {
     endPos = ui.value;
-    if (startPos != endPos) {
-      updateClassification()
-      var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
-      var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
-      $('#status').html("Dates changed to " + fromDate.toDateString() + " - " + toDate.toDateString());
+    if (startPos != endPos && drawEvent) {
+      predict(drawEvent);
+      // updateClassification()
+      // var fromDate = new Date($("#slider-range").slider("values", 0) * 1000);
+      // var toDate = new Date($("#slider-range").slider("values", 1) * 1000);
+      // $('#status').html("Dates changed to " + fromDate.toDateString() + " - " + toDate.toDateString());
+      // updateClassification();
     }
     startPos = endPos;
   });
@@ -50,7 +52,6 @@ $(document).ready(() => {
     else if(mode === 'predict'){
       $('#status').html("Loading...");
       predict(drawEvent);
-      $('#status').html("Classification complete. Tiles will begin loading");
       mode = null;
     }
     else if(mode === 'report'){
@@ -92,8 +93,6 @@ function predict(drawEvent) {
   
   ee.initialize();
   
-  $('#status').html('Classifing...');
-  
   console.log(getPolyCoordinates(poly));
   // console.log(getRectCoordinates(rectangle));
   
@@ -113,6 +112,7 @@ function predict(drawEvent) {
   geometry = ee.Geometry(getPolyCoordinates(poly));
   to = [toYear, toMonth, toDay].join('-');
   from = [fromYear, fromMonth, fromDay,].join('-');
+  $('#status').html("Working: " + from + " ~ " + to);
   updateClassification();
 }
 
@@ -189,7 +189,7 @@ function copySourceToClipboard() {
     $('#status').html("Classifier must run before coping code to clipboard");
     return;
   }
-  navigator.clipboard.writeText(classifierCode(geometry.toGeoJSONString(), from, to)).then(function() {
+  navigator.clipboard.writeText(classifierCode(geometry.toGeoJSONString(), from, to, doGaussBlur)).then(function() {
     $('#status').html("Copied to clipboard!");
   }, function(err) {
     console.error('Could not copy text: ', err);
