@@ -1,5 +1,4 @@
-# DAM Project's Web-application in Django
-
+# DAM Project's Web-application
 
 ## Clone the repository
 
